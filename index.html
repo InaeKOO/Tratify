@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TravelPulse — Switzerland</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #1a1a1a; min-height: 100vh; }
+
+    /* NAV */
+    .tp-nav { display: flex; align-items: center; padding: 0 2rem; background: #fff; border-bottom: 1px solid #e5e7eb; }
+    .tp-logo { display: flex; align-items: center; gap: 10px; padding: 1rem 0; margin-right: 2rem; text-decoration: none; }
+    .tp-logo-icon { width: 30px; height: 30px; background: #1D9E75; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .tp-logo-icon svg { width: 17px; height: 17px; fill: white; }
+    .tp-logo-name { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+    .tp-logo-country { font-size: 13px; color: #6b7280; margin-left: 4px; }
+    .tp-tabs { display: flex; }
+    .tp-tab { padding: 1rem 18px; font-size: 14px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; user-select: none; }
+    .tp-tab:hover { color: #1a1a1a; }
+    .tp-tab.active { color: #1D9E75; border-bottom-color: #1D9E75; font-weight: 500; }
+
+    /* LAYOUT */
+    .tp-page { display: none; max-width: 860px; margin: 0 auto; padding: 2rem; }
+    .tp-page.active { display: block; }
+
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+    .stat-card { background: #f1f5f9; border-radius: 10px; padding: 14px 16px; }
+    .stat-label { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+    .stat-val { font-size: 22px; font-weight: 600; color: #1a1a1a; }
+
+    /* SEARCH & FILTERS */
+    .search-row { display: flex; gap: 10px; margin-bottom: 1rem; }
+    .search-row input { flex: 1; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; outline: none; transition: border-color 0.15s; }
+    .search-row input:focus { border-color: #1D9E75; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .fbtn { padding: 6px 14px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 20px; background: #fff; color: #6b7280; cursor: pointer; transition: all 0.15s; }
+    .fbtn.active { background: #1D9E75; color: white; border-color: #1D9E75; }
+    .fbtn:hover:not(.active) { background: #f1f5f9; }
+
+    /* SECTION LABEL */
+    .section-lbl { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+
+    /* ANNOUNCEMENT CARDS */
+    .cards { display: flex; flex-direction: column; gap: 10px; }
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; transition: border-color 0.15s; }
+    .card:hover { border-color: #9ca3af; }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .card-title { font-size: 14px; font-weight: 600; color: #1a1a1a; line-height: 1.45; }
+    .card-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 8px; }
+    .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .b-open   { background: #dcfce7; color: #166534; }
+    .b-closed { background: #fee2e2; color: #991b1b; }
+    .b-partial{ background: #fef3c7; color: #92400e; }
+    .b-verified { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .b-gov        { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+    .b-construction { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .b-ai  { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+    .card-place { font-size: 13px; color: #6b7280; }
+    .card-time  { font-size: 12px; color: #9ca3af; white-space: nowrap; flex-shrink: 0; }
+    .card-body  { margin-top: 10px; font-size: 13px; color: #4b5563; line-height: 1.65; }
+    .card-foot  { margin-top: 10px; border-top: 1px solid #f3f4f6; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .source-lbl { font-size: 12px; color: #9ca3af; display: flex; align-items: center; gap: 6px; }
+    .vdot { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
+    .empty { text-align: center; padding: 3rem; color: #9ca3af; font-size: 14px; }
+
+    /* POST FORM */
+    .form-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; }
+    .form-row { margin-bottom: 1.1rem; }
+    .form-label { font-size: 13px; color: #374151; margin-bottom: 6px; display: block; font-weight: 500; }
+    .form-row input,
+    .form-row select,
+    .form-row textarea { width: 100%; padding: 10px 13px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; font-family: inherit; outline: none; transition: border-color 0.15s; }
+    .form-row input:focus,
+    .form-row select:focus,
+    .form-row textarea:focus { border-color: #1D9E75; }
+    .form-row textarea { resize: vertical; min-height: 90px; }
+    .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .verify-box { background: #f9fafb; border-radius: 10px; padding: 14px 16px; margin-bottom: 1.1rem; }
+    .verify-title { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 10px; }
+    .verify-options { display: flex; flex-direction: column; gap: 8px; }
+    .verify-opt { display: flex; align-items: center; gap: 12px; padding: 10px 13px; border: 1px solid #d1d5db; border-radius: 9px; background: #fff; cursor: pointer; transition: border-color 0.15s; }
+    .verify-opt:hover { border-color: #1D9E75; }
+    .verify-opt.selected { border-color: #1D9E75; background: #f0fdf4; }
+    .verify-opt-icon { width: 34px; height: 34px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .verify-opt-title { font-weight: 500; color: #1a1a1a; font-size: 13px; }
+    .verify-opt-sub { font-size: 12px; color: #6b7280; }
+    .submit-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #1D9E75; color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+    .submit-btn:hover { opacity: 0.88; }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .success-msg { display: none; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 14px 16px; margin-top: 1rem; font-size: 14px; color: #166534; line-height: 1.6; }
+
+    /* AI QUERY */
+    .ai-desc { font-size: 13px; color: #4b5563; margin-bottom: 1rem; line-height: 1.65; }
+    .query-row { display: flex; gap: 10px; margin-bottom: 1rem; }
+    .query-row input { flex: 1; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; outline: none; transition: border-color 0.15s; }
+    .query-row input:focus { border-color: #1D9E75; }
+    .query-btn { padding: 10px 20px; border: none; background: #1D9E75; color: white; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+    .query-btn:hover { opacity: 0.88; }
+    .example-queries { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+    .eq { padding: 5px 13px; font-size: 12px; border: 1px solid #d1d5db; border-radius: 20px; background: #f9fafb; color: #6b7280; cursor: pointer; transition: all 0.15s; }
+    .eq:hover { border-color: #1D9E75; color: #0F6E56; background: #f0fdf4; }
+    .json-wrap { display: none; margin-bottom: 1.5rem; }
+    .json-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .json-meta-label { font-size: 12px; color: #6b7280; }
+    .copy-btn { padding: 5px 12px; font-size: 12px; border: 1px solid #d1d5db; border-radius: 7px; background: #fff; color: #374151; cursor: pointer; }
+    .copy-btn:hover { background: #f1f5f9; }
+    .json-output { background: #1e293b; border-radius: 10px; padding: 16px; font-family: 'Menlo', 'Monaco', 'Courier New', monospace; font-size: 12px; color: #e2e8f0; line-height: 1.75; white-space: pre-wrap; word-break: break-word; overflow-x: auto; }
+    .endpoint-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px 18px; margin-top: 1rem; }
+    .endpoint-title { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 12px; }
+    .endpoint-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+    .endpoint-row:last-child { border-bottom: none; }
+    .method { padding: 3px 9px; border-radius: 5px; font-size: 11px; font-weight: 700; font-family: monospace; letter-spacing: 0.03em; }
+    .m-get  { background: #dcfce7; color: #166534; }
+    .m-post { background: #dbeafe; color: #1e40af; }
+    .endpoint-path { font-size: 13px; font-family: monospace; color: #1a1a1a; }
+    .endpoint-desc { font-size: 12px; color: #9ca3af; margin-left: auto; }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 2.5rem 1rem; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; margin-top: 2rem; }
+
+    @media (max-width: 600px) {
+      .tp-nav { padding: 0 1rem; overflow-x: auto; }
+      .tp-page { padding: 1.25rem; }
+      .form-2col { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="tp-nav">
+  <a class="tp-logo" href="#">
+    <div class="tp-logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    </div>
+    <span class="tp-logo-name">TravelPulse <span class="tp-logo-country">— Switzerland</span></span>
+  </a>
+  <div class="tp-tabs">
+    <div class="tp-tab active" data-tab="board">Announcement board</div>
+    <div class="tp-tab" data-tab="post">Post announcement</div>
+    <div class="tp-tab" data-tab="ai">AI agent query</div>
+  </div>
+</nav>
+
+<!-- BOARD -->
+<div class="tp-page active" id="tab-board">
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Active now</div><div class="stat-val" id="stat-active">—</div></div>
+    <div class="stat-card"><div class="stat-label">Verified sources</div><div class="stat-val" id="stat-verified">—</div></div>
+    <div class="stat-card"><div class="stat-label">Cantons covered</div><div class="stat-val">18</div></div>
+  </div>
+  <div class="search-row">
+    <input type="text" id="search-input" placeholder="Search by location, attraction, or keyword..." />
+  </div>
+  <div class="filters">
+    <button class="fbtn active" data-filter="all">All</button>
+    <button class="fbtn" data-filter="open">Open</button>
+    <button class="fbtn" data-filter="closed">Closed</button>
+    <button class="fbtn" data-filter="partial">Partial</button>
+    <button class="fbtn" data-filter="gov">Government</button>
+    <button class="fbtn" data-filter="construction">Construction</button>
+  </div>
+  <div class="section-lbl">Switzerland — live announcements</div>
+  <div class="cards" id="card-list"></div>
+</div>
+
+<!-- POST -->
+<div class="tp-page" id="tab-post">
+  <div class="form-card">
+    <div class="form-row">
+      <label class="form-label">Announcement title</label>
+      <input type="text" id="f-title" placeholder="e.g. Jungfraujoch closed due to weather — April 20–22" />
+    </div>
+    <div class="form-2col">
+      <div class="form-row">
+        <label class="form-label">Location / attraction</label>
+        <input type="text" id="f-location" placeholder="e.g. Interlaken, Bern" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Status</label>
+        <select id="f-status">
+          <option value="">Select status...</option>
+          <option value="open">Open</option>
+          <option value="closed">Closed</option>
+          <option value="partial">Partially open</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Description</label>
+      <textarea id="f-body" placeholder="What's affected, expected duration, alternatives for visitors..."></textarea>
+    </div>
+    <div class="form-2col">
+      <div class="form-row"><label class="form-label">Start date</label><input type="date" id="f-start" /></div>
+      <div class="form-row"><label class="form-label">End date (if known)</label><input type="date" id="f-end" /></div>
+    </div>
+    <div class="verify-box">
+      <div class="verify-title">Verification type</div>
+      <div class="verify-options">
+        <div class="verify-opt selected" onclick="selectVerify(this)">
+          <div class="verify-opt-icon" style="background:#dbeafe;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#1e40af"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+          </div>
+          <div>
+            <div class="verify-opt-title">Government / official body</div>
+            <div class="verify-opt-sub">Swiss federal authority, cantonal office, Swisstopo</div>
+          </div>
+        </div>
+        <div class="verify-opt" onclick="selectVerify(this)">
+          <div class="verify-opt-icon" style="background:#fef3c7;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#92400e"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+          </div>
+          <div>
+            <div class="verify-opt-title">Construction / infrastructure</div>
+            <div class="verify-opt-sub">ASTRA, SBB, cantonal road authority</div>
+          </div>
+        </div>
+        <div class="verify-opt" onclick="selectVerify(this)">
+          <div class="verify-opt-icon" style="background:#d1fae5;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#065f46"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          </div>
+          <div>
+            <div class="verify-opt-title">Verified site operator</div>
+            <div class="verify-opt-sub">Museum, cable car, SBB station, hotel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Organisation name</label>
+      <input type="text" id="f-org" placeholder="e.g. Jungfrau Railways AG" />
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">Submit for verification</button>
+    <div class="success-msg" id="success-msg">
+      Submitted successfully. Your announcement is under review. Verified announcements are published within 2 hours and immediately available to AI agents and travellers via the live feed and API.
+    </div>
+  </div>
+</div>
+
+<!-- AI QUERY -->
+<div class="tp-page" id="tab-ai">
+  <div class="ai-desc">Query Switzerland's live feed in structured JSON — for AI travel agents, itinerary planners, and booking bots. No scraping needed.</div>
+  <div class="query-row">
+    <input type="text" id="ai-query" placeholder="e.g. Is Jungfraujoch open today? / Closed cable cars in Ticino" />
+    <button class="query-btn" onclick="runQuery()">Query</button>
+  </div>
+  <div class="example-queries">
+    <span class="eq" onclick="setQuery('Is Jungfraujoch open today?')">Is Jungfraujoch open today?</span>
+    <span class="eq" onclick="setQuery('Closed attractions in Zurich')">Closed in Zurich</span>
+    <span class="eq" onclick="setQuery('Construction disruptions')">Construction disruptions</span>
+    <span class="eq" onclick="setQuery('All open attractions')">All open attractions</span>
+    <span class="eq" onclick="setQuery('Show government announcements')">Government announcements</span>
+  </div>
+  <div class="json-wrap" id="json-wrap">
+    <div class="json-meta">
+      <span class="json-meta-label" id="json-label">Response</span>
+      <button class="copy-btn" onclick="copyJson()">Copy JSON</button>
+    </div>
+    <div class="json-output" id="json-output"></div>
+  </div>
+  <div class="endpoint-card">
+    <div class="endpoint-title">API endpoints</div>
+    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">/v1/announcements?country=CH</span><span class="endpoint-desc">All Swiss announcements</span></div>
+    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">/v1/announcements?location=&amp;status=</span><span class="endpoint-desc">Filtered results</span></div>
+    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">/v1/announcements/{id}</span><span class="endpoint-desc">Single announcement</span></div>
+    <div class="endpoint-row"><span class="method m-post">POST</span><span class="endpoint-path">/v1/announcements</span><span class="endpoint-desc">Submit new announcement</span></div>
+  </div>
+</div>
+
+<footer>TravelPulse &mdash; verified travel announcements for AI agents &amp; travellers &mdash; Switzerland pilot</footer>
+
+<script>
+  const DATA = [
+    { id:"ch_001", status:"partial", type:"gov", title:"Jungfraujoch — top of Europe operating on reduced schedule", place:"Interlaken, Bern", body:"Spring timetable in effect until May 31. Last train up at 14:00 instead of 16:00. Summit restaurant fully open. Glacier Plateau accessible.", source:"Jungfrau Railways AG", time:"1 hour ago", verified:true },
+    { id:"ch_002", status:"closed", type:"construction", title:"A2 Gotthard tunnel — overnight closures Mon–Thu until June 15", place:"Airolo, Ticino", body:"Northbound tunnel closed 21:00–05:00 for safety lining works. Use A13 San Bernardino pass as alternative. Southbound unaffected.", source:"ASTRA Federal Roads Office", time:"3 hours ago", verified:true },
+    { id:"ch_003", status:"open", type:"gov", title:"Château de Chillon reopens after winter restoration", place:"Veytaux, Vaud", body:"All towers and dungeons accessible. New multimedia exhibition on the history of Savoy on Level 2. Audio guides in 8 languages.", source:"Château de Chillon Foundation", time:"2 days ago", verified:true },
+    { id:"ch_004", status:"closed", type:"gov", title:"Rheinfall viewpoint platform B closed for structural works", place:"Schaffhausen", body:"Platform B (closest to the falls) closed until April 30. Platforms A and C remain open. Boat tours operating normally.", source:"Canton Schaffhausen Tourism", time:"5 hours ago", verified:true },
+    { id:"ch_005", status:"open", type:"gov", title:"Swiss National Museum Zurich — special exhibition opens April 21", place:"Zurich", body:"New exhibition 'Switzerland and the Alps' opens Monday. Extended hours until 20:00 on Thursdays. Permanent collection fully accessible.", source:"Swiss National Museum", time:"12 hours ago", verified:true },
+    { id:"ch_006", status:"partial", type:"construction", title:"Lugano funicular reduced service — rack replacement project", place:"Lugano, Ticino", body:"Funicular running every 30 min instead of 15 min. Upper station shops closed. Expected full service restoration by May 20.", source:"Lugano Municipality", time:"1 day ago", verified:true },
+    { id:"ch_007", status:"open", type:"gov", title:"Lauterbrunnen valley — all hiking trails open after winter", place:"Lauterbrunnen, Bern", body:"72 km of valley trails cleared and signed. Staubbach Falls viewing platform reopened. Trümmelbach Falls opens May 1.", source:"Jungfrau Region Tourism", time:"2 days ago", verified:true },
+    { id:"ch_008", status:"closed", type:"construction", title:"Bern Bundesplatz — closed for federal celebration setup Apr 19–21", place:"Bern", body:"Square fully closed to the public this weekend. Normal access resumes Monday April 22. Kramgasse and Münstergasse unaffected.", source:"City of Bern", time:"30 min ago", verified:true }
+  ];
+
+  let filter = "all", search = "";
+
+  function statusBadge(s) {
+    if (s === "open")    return `<span class="badge b-open">Open</span>`;
+    if (s === "closed")  return `<span class="badge b-closed">Closed</span>`;
+    return `<span class="badge b-partial">Partial</span>`;
+  }
+  function typeBadge(t) {
+    return t === "gov"
+      ? `<span class="badge b-gov">Government</span>`
+      : `<span class="badge b-construction">Construction</span>`;
+  }
+
+  function renderBoard() {
+    const list = document.getElementById("card-list");
+    const q = search.toLowerCase();
+    const shown = DATA.filter(a => {
+      const mf = filter === "all" || a.status === filter || a.type === filter;
+      const ms = !q || a.title.toLowerCase().includes(q) || a.place.toLowerCase().includes(q) || a.body.toLowerCase().includes(q);
+      return mf && ms;
+    });
+    document.getElementById("stat-active").textContent   = DATA.filter(a => a.status !== "closed").length;
+    document.getElementById("stat-verified").textContent = DATA.filter(a => a.verified).length;
+    if (!shown.length) { list.innerHTML = `<div class="empty">No announcements match your filters.</div>`; return; }
+    list.innerHTML = shown.map(a => `
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">${a.title}</div>
+            <div class="card-meta">${statusBadge(a.status)}${typeBadge(a.type)}<span class="badge b-verified">Verified</span><span class="card-place">${a.place}</span></div>
+          </div>
+          <span class="card-time">${a.time}</span>
+        </div>
+        <div class="card-body">${a.body}</div>
+        <div class="card-foot">
+          <div class="source-lbl"><div class="vdot"></div>${a.source}</div>
+          <span class="badge b-ai" style="font-size:11px;">AI-readable</span>
+        </div>
+      </div>`).join("");
+  }
+
+  document.querySelectorAll(".fbtn").forEach(b => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".fbtn").forEach(x => x.classList.remove("active"));
+      b.classList.add("active"); filter = b.dataset.filter; renderBoard();
+    });
+  });
+  document.getElementById("search-input").addEventListener("input", e => { search = e.target.value; renderBoard(); });
+
+  document.querySelectorAll(".tp-tab").forEach(t => {
+    t.addEventListener("click", () => {
+      document.querySelectorAll(".tp-tab").forEach(x => x.classList.remove("active"));
+      document.querySelectorAll(".tp-page").forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      document.getElementById("tab-" + t.dataset.tab).classList.add("active");
+    });
+  });
+
+  function selectVerify(el) {
+    document.querySelectorAll(".verify-opt").forEach(x => x.classList.remove("selected"));
+    el.classList.add("selected");
+  }
+
+  function submitForm() {
+    const title  = document.getElementById("f-title").value.trim();
+    const loc    = document.getElementById("f-location").value.trim();
+    const status = document.getElementById("f-status").value;
+    const org    = document.getElementById("f-org").value.trim();
+    if (!title || !loc || !status || !org) { alert("Please fill in title, location, status, and organisation name."); return; }
+    const btn = document.getElementById("submit-btn");
+    btn.disabled = true; btn.textContent = "Submitting...";
+    setTimeout(() => {
+      document.getElementById("success-msg").style.display = "block";
+      btn.textContent = "Submitted";
+    }, 900);
+  }
+
+  function setQuery(q) { document.getElementById("ai-query").value = q; runQuery(); }
+
+  function runQuery() {
+    const raw = document.getElementById("ai-query").value.trim();
+    if (!raw) return;
+    const q = raw.toLowerCase();
+    let results = DATA;
+    if (q.includes("jungfrau"))                        results = DATA.filter(a => a.title.toLowerCase().includes("jungfrau") || a.place.toLowerCase().includes("interlaken"));
+    else if (q.includes("zurich"))                     results = DATA.filter(a => a.place.toLowerCase().includes("zurich"));
+    else if (q.includes("closed"))                     results = DATA.filter(a => a.status === "closed");
+    else if (q.includes("open"))                       results = DATA.filter(a => a.status === "open");
+    else if (q.includes("construction"))               results = DATA.filter(a => a.type === "construction");
+    else if (q.includes("government") || q.includes("gov")) results = DATA.filter(a => a.type === "gov");
+    const resp = {
+      query: raw, timestamp: new Date().toISOString(), country: "CH",
+      source: "TravelPulse Live Feed", total_results: results.length,
+      results: results.map(a => ({ id: a.id, title: a.title, location: a.place, status: a.status, type: a.type, verified: a.verified, source_org: a.source, description: a.body, last_updated: a.time }))
+    };
+    const wrap = document.getElementById("json-wrap");
+    wrap.style.display = "block";
+    document.getElementById("json-label").textContent = `${results.length} result${results.length !== 1 ? "s" : ""} for "${raw}"`;
+    document.getElementById("json-output").textContent = JSON.stringify(resp, null, 2);
+  }
+
+  function copyJson() {
+    navigator.clipboard.writeText(document.getElementById("json-output").textContent).then(() => {
+      const b = document.querySelector(".copy-btn"); b.textContent = "Copied!";
+      setTimeout(() => b.textContent = "Copy JSON", 1500);
+    });
+  }
+
+  renderBoard();
+</script>
+</body>
+</html>
