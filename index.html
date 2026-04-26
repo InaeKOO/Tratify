@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TravelPulse — Switzerland</title>
+  <title>Tratify — Switzerland</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #1a1a1a; min-height: 100vh; }
@@ -135,7 +135,7 @@
     <div class="tp-logo-icon">
       <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
     </div>
-    <span class="tp-logo-name">TravelPulse <span class="tp-logo-country">— Switzerland</span></span>
+    <span class="tp-logo-name">Tratify <span class="tp-logo-country">— Switzerland</span></span>
   </a>
   <div class="tp-tabs">
     <div class="tp-tab active" data-tab="board">Announcement board</div>
@@ -269,7 +269,7 @@
   </div>
 </div>
 
-<footer>TravelPulse &mdash; verified travel announcements for AI agents &amp; travellers &mdash; Switzerland pilot</footer>
+<footer>Tratify &mdash; verified travel announcements for AI agents &amp; travellers &mdash; Switzerland pilot</footer>
 
 <script>
   const DATA = [
@@ -375,7 +375,7 @@
     else if (q.includes("government") || q.includes("gov")) results = DATA.filter(a => a.type === "gov");
     const resp = {
       query: raw, timestamp: new Date().toISOString(), country: "CH",
-      source: "TravelPulse Live Feed", total_results: results.length,
+      source: "Tratify Live Feed", total_results: results.length,
       results: results.map(a => ({ id: a.id, title: a.title, location: a.place, status: a.status, type: a.type, verified: a.verified, source_org: a.source, description: a.body, last_updated: a.time }))
     };
     const wrap = document.getElementById("json-wrap");
