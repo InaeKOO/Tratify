@@ -3,46 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tratify — Switzerland</title>
+  <title>Tratify — Live Verified Travel Announcements</title>
+
+  <!-- Supabase JS client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #1a1a1a; min-height: 100vh; }
 
-    /* NAV */
-    .tp-nav { display: flex; align-items: center; padding: 0 2rem; background: #fff; border-bottom: 1px solid #e5e7eb; }
-    .tp-logo { display: flex; align-items: center; gap: 10px; padding: 1rem 0; margin-right: 2rem; text-decoration: none; }
-    .tp-logo-icon { width: 30px; height: 30px; background: #1D9E75; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .tp-logo-icon svg { width: 17px; height: 17px; fill: white; }
-    .tp-logo-name { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-    .tp-logo-country { font-size: 13px; color: #6b7280; margin-left: 4px; }
-    .tp-tabs { display: flex; }
-    .tp-tab { padding: 1rem 18px; font-size: 14px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; user-select: none; }
-    .tp-tab:hover { color: #1a1a1a; }
-    .tp-tab.active { color: #1D9E75; border-bottom-color: #1D9E75; font-weight: 500; }
+    .nav { display: flex; align-items: center; padding: 0 2rem; background: #fff; border-bottom: 1px solid #e5e7eb; flex-wrap: wrap; }
+    .logo { display: flex; align-items: center; gap: 10px; padding: 1rem 0; margin-right: 2rem; text-decoration: none; }
+    .logo-icon { width: 30px; height: 30px; background: #1D9E75; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-icon svg { width: 17px; height: 17px; fill: white; }
+    .logo-name { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+    .tabs { display: flex; }
+    .tab { padding: 1rem 16px; font-size: 14px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; user-select: none; white-space: nowrap; }
+    .tab:hover { color: #1a1a1a; }
+    .tab.active { color: #1D9E75; border-bottom-color: #1D9E75; font-weight: 500; }
+    .tab.admin-tab { color: #9ca3af; font-size: 13px; }
+    .tab.admin-tab.active { color: #b45309; border-bottom-color: #b45309; }
 
-    /* LAYOUT */
-    .tp-page { display: none; max-width: 860px; margin: 0 auto; padding: 2rem; }
-    .tp-page.active { display: block; }
+    .lang-bar { display: flex; align-items: center; gap: 8px; padding: 10px 2rem; background: #f9fafb; border-bottom: 1px solid #e5e7eb; flex-wrap: wrap; }
+    .lang-label { font-size: 12px; color: #9ca3af; margin-right: 4px; }
+    .lang-btn { padding: 4px 13px; font-size: 12px; border: 1px solid #d1d5db; border-radius: 20px; background: #fff; color: #6b7280; cursor: pointer; transition: all 0.15s; }
+    .lang-btn.active { background: #1D9E75; color: white; border-color: #1D9E75; }
+    .lang-btn:hover:not(.active) { border-color: #1D9E75; color: #0F6E56; }
 
-    /* STATS */
+    .page { display: none; max-width: 860px; margin: 0 auto; padding: 2rem; }
+    .page.active { display: block; }
+
+    .region-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .rbtn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 20px; background: #fff; color: #6b7280; cursor: pointer; transition: all 0.15s; }
+    .rbtn.active { border-color: #1D9E75; color: #0F6E56; background: #f0fdf4; }
+    .rbtn:hover:not(.active) { background: #f9fafb; }
+
     .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
-    .stat-card { background: #f1f5f9; border-radius: 10px; padding: 14px 16px; }
-    .stat-label { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+    .stat { background: #f1f5f9; border-radius: 10px; padding: 14px 16px; }
+    .stat-lbl { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
     .stat-val { font-size: 22px; font-weight: 600; color: #1a1a1a; }
 
-    /* SEARCH & FILTERS */
-    .search-row { display: flex; gap: 10px; margin-bottom: 1rem; }
+    .search-row { display: flex; gap: 10px; margin-bottom: 1.5rem; }
     .search-row input { flex: 1; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; outline: none; transition: border-color 0.15s; }
     .search-row input:focus { border-color: #1D9E75; }
-    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
-    .fbtn { padding: 6px 14px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 20px; background: #fff; color: #6b7280; cursor: pointer; transition: all 0.15s; }
-    .fbtn.active { background: #1D9E75; color: white; border-color: #1D9E75; }
-    .fbtn:hover:not(.active) { background: #f1f5f9; }
-
-    /* SECTION LABEL */
     .section-lbl { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
 
-    /* ANNOUNCEMENT CARDS */
     .cards { display: flex; flex-direction: column; gap: 10px; }
     .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; transition: border-color 0.15s; }
     .card:hover { border-color: #9ca3af; }
@@ -50,31 +55,45 @@
     .card-title { font-size: 14px; font-weight: 600; color: #1a1a1a; line-height: 1.45; }
     .card-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 8px; }
     .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-    .b-open   { background: #dcfce7; color: #166534; }
-    .b-closed { background: #fee2e2; color: #991b1b; }
-    .b-partial{ background: #fef3c7; color: #92400e; }
-    .b-verified { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
-    .b-gov        { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+    .b-open         { background: #dcfce7; color: #166534; }
+    .b-closed       { background: #fee2e2; color: #991b1b; }
+    .b-partial      { background: #fef3c7; color: #92400e; }
+    .b-verified     { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .b-pending      { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .b-gov          { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
     .b-construction { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
-    .b-ai  { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
+    .b-operator     { background: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
+    .b-lang         { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; font-size: 11px; }
+    .b-demo         { background: #f1f5f9; color: #6b7280; border: 1px solid #d1d5db; font-size: 11px; }
     .card-place { font-size: 13px; color: #6b7280; }
     .card-time  { font-size: 12px; color: #9ca3af; white-space: nowrap; flex-shrink: 0; }
     .card-body  { margin-top: 10px; font-size: 13px; color: #4b5563; line-height: 1.65; }
-    .card-foot  { margin-top: 10px; border-top: 1px solid #f3f4f6; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .card-foot  { margin-top: 10px; border-top: 1px solid #f3f4f6; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
     .source-lbl { font-size: 12px; color: #9ca3af; display: flex; align-items: center; gap: 6px; }
     .vdot { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
-    .empty { text-align: center; padding: 3rem; color: #9ca3af; font-size: 14px; }
+    .vdot-pending { background: #f59e0b; }
 
-    /* POST FORM */
+    .translate-btn { padding: 5px 12px; font-size: 12px; border: 1px solid #d1d5db; border-radius: 7px; background: #fff; color: #374151; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .translate-btn:hover { border-color: #1D9E75; color: #0F6E56; background: #f0fdf4; }
+    .translate-btn.loading { opacity: 0.5; cursor: not-allowed; }
+    .translated-box { margin-top: 10px; padding: 12px 14px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 9px; }
+    .translated-lbl { font-size: 11px; font-weight: 600; color: #1D9E75; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .ai-dot { width: 6px; height: 6px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
+    .translated-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 5px; line-height: 1.4; }
+    .translated-body  { font-size: 13px; color: #4b5563; line-height: 1.65; }
+    .empty { text-align: center; padding: 3rem; color: #9ca3af; font-size: 14px; }
+    .loading-state { text-align: center; padding: 3rem; color: #9ca3af; font-size: 14px; }
+
+    /* ── POST FORM ── */
     .form-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; }
     .form-row { margin-bottom: 1.1rem; }
     .form-label { font-size: 13px; color: #374151; margin-bottom: 6px; display: block; font-weight: 500; }
-    .form-row input,
-    .form-row select,
-    .form-row textarea { width: 100%; padding: 10px 13px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; font-family: inherit; outline: none; transition: border-color 0.15s; }
-    .form-row input:focus,
-    .form-row select:focus,
-    .form-row textarea:focus { border-color: #1D9E75; }
+    .form-row input, .form-row select, .form-row textarea {
+      width: 100%; padding: 10px 13px; border: 1px solid #d1d5db; border-radius: 8px;
+      font-size: 14px; background: #fff; color: #1a1a1a; font-family: inherit;
+      outline: none; transition: border-color 0.15s;
+    }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: #1D9E75; }
     .form-row textarea { resize: vertical; min-height: 90px; }
     .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .verify-box { background: #f9fafb; border-radius: 10px; padding: 14px 16px; margin-bottom: 1.1rem; }
@@ -85,18 +104,19 @@
     .verify-opt.selected { border-color: #1D9E75; background: #f0fdf4; }
     .verify-opt-icon { width: 34px; height: 34px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .verify-opt-title { font-weight: 500; color: #1a1a1a; font-size: 13px; }
-    .verify-opt-sub { font-size: 12px; color: #6b7280; }
+    .verify-opt-sub   { font-size: 12px; color: #6b7280; }
     .submit-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: #1D9E75; color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
     .submit-btn:hover { opacity: 0.88; }
     .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .success-msg { display: none; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 14px 16px; margin-top: 1rem; font-size: 14px; color: #166534; line-height: 1.6; }
+    .error-msg { display: none; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 14px 16px; margin-top: 1rem; font-size: 14px; color: #991b1b; line-height: 1.6; }
 
-    /* AI QUERY */
+    /* ── AI QUERY ── */
     .ai-desc { font-size: 13px; color: #4b5563; margin-bottom: 1rem; line-height: 1.65; }
     .query-row { display: flex; gap: 10px; margin-bottom: 1rem; }
     .query-row input { flex: 1; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; outline: none; transition: border-color 0.15s; }
     .query-row input:focus { border-color: #1D9E75; }
-    .query-btn { padding: 10px 20px; border: none; background: #1D9E75; color: white; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+    .query-btn { padding: 10px 20px; border: none; background: #1D9E75; color: white; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 600; }
     .query-btn:hover { opacity: 0.88; }
     .example-queries { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
     .eq { padding: 5px 13px; font-size: 12px; border: 1px solid #d1d5db; border-radius: 20px; background: #f9fafb; color: #6b7280; cursor: pointer; transition: all 0.15s; }
@@ -111,18 +131,42 @@
     .endpoint-title { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 12px; }
     .endpoint-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
     .endpoint-row:last-child { border-bottom: none; }
-    .method { padding: 3px 9px; border-radius: 5px; font-size: 11px; font-weight: 700; font-family: monospace; letter-spacing: 0.03em; }
+    .method { padding: 3px 9px; border-radius: 5px; font-size: 11px; font-weight: 700; font-family: monospace; }
     .m-get  { background: #dcfce7; color: #166534; }
     .m-post { background: #dbeafe; color: #1e40af; }
     .endpoint-path { font-size: 13px; font-family: monospace; color: #1a1a1a; }
     .endpoint-desc { font-size: 12px; color: #9ca3af; margin-left: auto; }
 
-    /* FOOTER */
+    /* ── ADMIN ── */
+    .admin-lock { text-align: center; padding: 3rem 1rem; }
+    .admin-lock h3 { font-size: 16px; color: #374151; margin-bottom: 1rem; }
+    .admin-lock input { padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; width: 260px; outline: none; margin-right: 8px; }
+    .admin-lock input:focus { border-color: #b45309; }
+    .admin-unlock-btn { padding: 10px 18px; border: none; background: #b45309; color: white; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 600; }
+    .admin-panel { display: none; }
+    .admin-panel.visible { display: block; }
+    .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .admin-title { font-size: 15px; font-weight: 600; color: #374151; }
+    .admin-subtitle { font-size: 13px; color: #6b7280; }
+    .pending-card { background: #fff; border: 1px solid #fcd34d; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .pending-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .approve-btn { padding: 7px 16px; font-size: 13px; border: none; background: #1D9E75; color: white; border-radius: 7px; cursor: pointer; font-weight: 500; }
+    .approve-btn:hover { opacity: 0.88; }
+    .reject-btn  { padding: 7px 16px; font-size: 13px; border: 1px solid #fca5a5; background: #fff; color: #991b1b; border-radius: 7px; cursor: pointer; font-weight: 500; }
+    .reject-btn:hover { background: #fef2f2; }
+    .no-pending { text-align: center; padding: 2rem; color: #9ca3af; font-size: 14px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; }
+
+    /* ── CONFIG NOTICE ── */
+    .config-notice { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 12px 16px; margin-bottom: 1.25rem; font-size: 13px; color: #92400e; line-height: 1.6; }
+    .config-notice strong { font-weight: 600; }
+    .config-notice code { background: #fde68a; padding: 1px 5px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+
     footer { text-align: center; padding: 2.5rem 1rem; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; margin-top: 2rem; }
 
     @media (max-width: 600px) {
-      .tp-nav { padding: 0 1rem; overflow-x: auto; }
-      .tp-page { padding: 1.25rem; }
+      .nav { padding: 0 1rem; overflow-x: auto; }
+      .lang-bar { padding: 10px 1rem; }
+      .page { padding: 1.25rem; }
       .form-2col { grid-template-columns: 1fr; }
       .stats-row { grid-template-columns: 1fr 1fr; }
     }
@@ -130,44 +174,66 @@
 </head>
 <body>
 
-<nav class="tp-nav">
-  <a class="tp-logo" href="#">
-    <div class="tp-logo-icon">
+<!-- ══════════════ NAV ══════════════ -->
+<nav class="nav">
+  <a class="logo" href="#">
+    <div class="logo-icon">
       <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
     </div>
-    <span class="tp-logo-name">Tratify <span class="tp-logo-country">— Switzerland</span></span>
+    <span class="logo-name">Tratify</span>
   </a>
-  <div class="tp-tabs">
-    <div class="tp-tab active" data-tab="board">Announcement board</div>
-    <div class="tp-tab" data-tab="post">Post announcement</div>
-    <div class="tp-tab" data-tab="ai">AI agent query</div>
+  <div class="tabs">
+    <div class="tab active" data-tab="board">Board</div>
+    <div class="tab" data-tab="post">Post announcement</div>
+    <div class="tab" data-tab="ai">AI query</div>
+    <div class="tab admin-tab" data-tab="admin">Admin ⚙</div>
   </div>
 </nav>
 
-<!-- BOARD -->
-<div class="tp-page active" id="tab-board">
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-label">Active now</div><div class="stat-val" id="stat-active">—</div></div>
-    <div class="stat-card"><div class="stat-label">Verified sources</div><div class="stat-val" id="stat-verified">—</div></div>
-    <div class="stat-card"><div class="stat-label">Cantons covered</div><div class="stat-val">18</div></div>
-  </div>
-  <div class="search-row">
-    <input type="text" id="search-input" placeholder="Search by location, attraction, or keyword..." />
-  </div>
-  <div class="filters">
-    <button class="fbtn active" data-filter="all">All</button>
-    <button class="fbtn" data-filter="open">Open</button>
-    <button class="fbtn" data-filter="closed">Closed</button>
-    <button class="fbtn" data-filter="partial">Partial</button>
-    <button class="fbtn" data-filter="gov">Government</button>
-    <button class="fbtn" data-filter="construction">Construction</button>
-  </div>
-  <div class="section-lbl">Switzerland — live announcements</div>
-  <div class="cards" id="card-list"></div>
+<!-- ══════════════ LANGUAGE BAR ══════════════ -->
+<div class="lang-bar">
+  <span class="lang-label">Translate to:</span>
+  <button class="lang-btn active" data-lang="en">English</button>
+  <button class="lang-btn" data-lang="de">Deutsch</button>
+  <button class="lang-btn" data-lang="fr">Français</button>
+  <button class="lang-btn" data-lang="ja">日本語</button>
+  <button class="lang-btn" data-lang="zh">中文</button>
+  <button class="lang-btn" data-lang="ar">العربية</button>
+  <button class="lang-btn" data-lang="es">Español</button>
+  <button class="lang-btn" data-lang="it">Italiano</button>
+  <button class="lang-btn" data-lang="pt">Português</button>
+  <button class="lang-btn" data-lang="ko">한국어</button>
 </div>
 
-<!-- POST -->
-<div class="tp-page" id="tab-post">
+<!-- ══════════════ BOARD ══════════════ -->
+<div class="page active" id="tab-board">
+  <div class="region-row">
+    <button class="rbtn active" data-region="all">🌍 All</button>
+    <button class="rbtn" data-region="ch">🇨🇭 Switzerland</button>
+    <button class="rbtn" data-region="jp">🇯🇵 Japan</button>
+    <button class="rbtn" data-region="fr">🇫🇷 France</button>
+    <button class="rbtn" data-region="ae">🇦🇪 UAE</button>
+    <button class="rbtn" data-region="cn">🇨🇳 China</button>
+    <button class="rbtn" data-region="de">🇩🇪 Germany</button>
+    <button class="rbtn" data-region="it">🇮🇹 Italy</button>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-lbl">Live announcements</div><div class="stat-val" id="s-live">—</div></div>
+    <div class="stat"><div class="stat-lbl">Source languages</div><div class="stat-val" id="s-langs">—</div></div>
+    <div class="stat"><div class="stat-lbl">Regions</div><div class="stat-val" id="s-regions">—</div></div>
+  </div>
+  <div class="search-row">
+    <input type="text" id="search" placeholder="Search attractions, locations, keywords..." />
+  </div>
+  <div class="section-lbl">Live verified announcements</div>
+  <div class="cards" id="card-list"><div class="loading-state">Loading announcements…</div></div>
+</div>
+
+<!-- ══════════════ POST ══════════════ -->
+<div class="page" id="tab-post">
+  <div id="supabase-post-notice" class="config-notice" style="display:none;">
+    <strong>Supabase not configured.</strong> Add your <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> at the top of this file to enable real submissions.
+  </div>
   <div class="form-card">
     <div class="form-row">
       <label class="form-label">Announcement title</label>
@@ -176,21 +242,51 @@
     <div class="form-2col">
       <div class="form-row">
         <label class="form-label">Location / attraction</label>
-        <input type="text" id="f-location" placeholder="e.g. Interlaken, Bern" />
+        <input type="text" id="f-location" placeholder="e.g. Interlaken, Bern, Switzerland" />
       </div>
+      <div class="form-row">
+        <label class="form-label">Region code</label>
+        <select id="f-region">
+          <option value="ch">🇨🇭 Switzerland (ch)</option>
+          <option value="de">🇩🇪 Germany (de)</option>
+          <option value="fr">🇫🇷 France (fr)</option>
+          <option value="it">🇮🇹 Italy (it)</option>
+          <option value="jp">🇯🇵 Japan (jp)</option>
+          <option value="cn">🇨🇳 China (cn)</option>
+          <option value="ae">🇦🇪 UAE (ae)</option>
+          <option value="other">🌍 Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-2col">
       <div class="form-row">
         <label class="form-label">Status</label>
         <select id="f-status">
-          <option value="">Select status...</option>
+          <option value="">Select status…</option>
           <option value="open">Open</option>
           <option value="closed">Closed</option>
           <option value="partial">Partially open</option>
         </select>
       </div>
+      <div class="form-row">
+        <label class="form-label">Language you are posting in</label>
+        <select id="f-postlang">
+          <option value="en">English</option>
+          <option value="de">Deutsch (German)</option>
+          <option value="fr">Français (French)</option>
+          <option value="ja">日本語 (Japanese)</option>
+          <option value="zh">中文 (Chinese)</option>
+          <option value="ar">العربية (Arabic)</option>
+          <option value="es">Español (Spanish)</option>
+          <option value="it">Italiano (Italian)</option>
+          <option value="pt">Português (Portuguese)</option>
+          <option value="ko">한국어 (Korean)</option>
+        </select>
+      </div>
     </div>
     <div class="form-row">
-      <label class="form-label">Description</label>
-      <textarea id="f-body" placeholder="What's affected, expected duration, alternatives for visitors..."></textarea>
+      <label class="form-label">Description <span style="color:#9ca3af;font-weight:400;">(write in your own language — AI translates for visitors)</span></label>
+      <textarea id="f-body" placeholder="What's affected, expected duration, alternatives for visitors…"></textarea>
     </div>
     <div class="form-2col">
       <div class="form-row"><label class="form-label">Start date</label><input type="date" id="f-start" /></div>
@@ -199,32 +295,23 @@
     <div class="verify-box">
       <div class="verify-title">Verification type</div>
       <div class="verify-options">
-        <div class="verify-opt selected" onclick="selectVerify(this)">
+        <div class="verify-opt selected" data-vtype="gov" onclick="selectVerify(this)">
           <div class="verify-opt-icon" style="background:#dbeafe;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="#1e40af"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
           </div>
-          <div>
-            <div class="verify-opt-title">Government / official body</div>
-            <div class="verify-opt-sub">Swiss federal authority, cantonal office, Swisstopo</div>
-          </div>
+          <div><div class="verify-opt-title">Government / official body</div><div class="verify-opt-sub">Federal or cantonal ministry, tourism authority, national park</div></div>
         </div>
-        <div class="verify-opt" onclick="selectVerify(this)">
+        <div class="verify-opt" data-vtype="construction" onclick="selectVerify(this)">
           <div class="verify-opt-icon" style="background:#fef3c7;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="#92400e"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
           </div>
-          <div>
-            <div class="verify-opt-title">Construction / infrastructure</div>
-            <div class="verify-opt-sub">ASTRA, SBB, cantonal road authority</div>
-          </div>
+          <div><div class="verify-opt-title">Construction / infrastructure</div><div class="verify-opt-sub">Road authority, rail operator, utilities company</div></div>
         </div>
-        <div class="verify-opt" onclick="selectVerify(this)">
+        <div class="verify-opt" data-vtype="operator" onclick="selectVerify(this)">
           <div class="verify-opt-icon" style="background:#d1fae5;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="#065f46"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
           </div>
-          <div>
-            <div class="verify-opt-title">Verified site operator</div>
-            <div class="verify-opt-sub">Museum, cable car, SBB station, hotel</div>
-          </div>
+          <div><div class="verify-opt-title">Verified site operator</div><div class="verify-opt-sub">Museum, cable car, transport hub, hotel</div></div>
         </div>
       </div>
     </div>
@@ -232,26 +319,34 @@
       <label class="form-label">Organisation name</label>
       <input type="text" id="f-org" placeholder="e.g. Jungfrau Railways AG" />
     </div>
+    <div class="form-row">
+      <label class="form-label">Contact email <span style="color:#9ca3af;font-weight:400;">(for verification — not shown publicly)</span></label>
+      <input type="email" id="f-email" placeholder="e.g. info@jungfrau.ch" />
+    </div>
     <button class="submit-btn" id="submit-btn" onclick="submitForm()">Submit for verification</button>
     <div class="success-msg" id="success-msg">
-      Submitted successfully. Your announcement is under review. Verified announcements are published within 2 hours and immediately available to AI agents and travellers via the live feed and API.
+      ✅ Submitted successfully. Your announcement is now pending review. Once approved, it will appear live on Tratify and be available to travellers in all supported languages. We will contact you at the email provided if we need anything.
+    </div>
+    <div class="error-msg" id="error-msg">
+      Something went wrong. Please check your connection and try again.
     </div>
   </div>
 </div>
 
-<!-- AI QUERY -->
-<div class="tp-page" id="tab-ai">
-  <div class="ai-desc">Query Switzerland's live feed in structured JSON — for AI travel agents, itinerary planners, and booking bots. No scraping needed.</div>
+<!-- ══════════════ AI QUERY ══════════════ -->
+<div class="page" id="tab-ai">
+  <div class="ai-desc">Query the live feed as structured JSON — for AI travel agents, itinerary planners, and booking bots. Responses include original and translated content.</div>
   <div class="query-row">
-    <input type="text" id="ai-query" placeholder="e.g. Is Jungfraujoch open today? / Closed cable cars in Ticino" />
+    <input type="text" id="ai-query" placeholder="e.g. Is Jungfraujoch open? / Closed sites in Japan" />
     <button class="query-btn" onclick="runQuery()">Query</button>
   </div>
   <div class="example-queries">
-    <span class="eq" onclick="setQuery('Is Jungfraujoch open today?')">Is Jungfraujoch open today?</span>
-    <span class="eq" onclick="setQuery('Closed attractions in Zurich')">Closed in Zurich</span>
-    <span class="eq" onclick="setQuery('Construction disruptions')">Construction disruptions</span>
-    <span class="eq" onclick="setQuery('All open attractions')">All open attractions</span>
-    <span class="eq" onclick="setQuery('Show government announcements')">Government announcements</span>
+    <span class="eq" onclick="setQuery('Is Jungfraujoch open today?')">Is Jungfraujoch open?</span>
+    <span class="eq" onclick="setQuery('Closed attractions in Japan')">Closed in Japan</span>
+    <span class="eq" onclick="setQuery('Construction disruptions')">Construction</span>
+    <span class="eq" onclick="setQuery('All open attractions')">All open</span>
+    <span class="eq" onclick="setQuery('Government announcements in France')">France</span>
+    <span class="eq" onclick="setQuery('What is open in Dubai?')">Dubai</span>
   </div>
   <div class="json-wrap" id="json-wrap">
     <div class="json-meta">
@@ -261,137 +356,415 @@
     <div class="json-output" id="json-output"></div>
   </div>
   <div class="endpoint-card">
-    <div class="endpoint-title">API endpoints</div>
-    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">/v1/announcements?country=CH</span><span class="endpoint-desc">All Swiss announcements</span></div>
-    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">/v1/announcements?location=&amp;status=</span><span class="endpoint-desc">Filtered results</span></div>
-    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">/v1/announcements/{id}</span><span class="endpoint-desc">Single announcement</span></div>
-    <div class="endpoint-row"><span class="method m-post">POST</span><span class="endpoint-path">/v1/announcements</span><span class="endpoint-desc">Submit new announcement</span></div>
+    <div class="endpoint-title">API endpoints (Supabase REST — auto-generated)</div>
+    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">/rest/v1/announcements?verified=eq.true</span><span class="endpoint-desc">All verified</span></div>
+    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">?region=eq.ch&verified=eq.true</span><span class="endpoint-desc">By region</span></div>
+    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">?status=eq.closed&verified=eq.true</span><span class="endpoint-desc">By status</span></div>
+    <div class="endpoint-row"><span class="method m-get">GET</span><span class="endpoint-path">?orig_lang=eq.de&verified=eq.true</span><span class="endpoint-desc">By source language</span></div>
+    <div class="endpoint-row"><span class="method m-post">POST</span><span class="endpoint-path">/rest/v1/announcements</span><span class="endpoint-desc">Submit announcement</span></div>
   </div>
 </div>
 
-<footer>Tratify &mdash; verified travel announcements for AI agents &amp; travellers &mdash; Switzerland pilot</footer>
+<!-- ══════════════ ADMIN ══════════════ -->
+<div class="page" id="tab-admin">
+  <div class="admin-lock" id="admin-lock">
+    <h3>🔐 Admin access</h3>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:1.5rem;">Enter your admin password to review pending announcements.</p>
+    <input type="password" id="admin-pw" placeholder="Admin password" onkeydown="if(event.key==='Enter')unlockAdmin()" />
+    <button class="admin-unlock-btn" onclick="unlockAdmin()">Unlock</button>
+    <p id="pw-error" style="font-size:13px;color:#991b1b;margin-top:.75rem;display:none;">Incorrect password.</p>
+  </div>
+  <div class="admin-panel" id="admin-panel">
+    <div class="admin-header">
+      <div>
+        <div class="admin-title">Pending announcements</div>
+        <div class="admin-subtitle">Review and approve or reject submissions before they go live.</div>
+      </div>
+      <button onclick="loadPending()" style="padding:7px 14px;font-size:13px;border:1px solid #d1d5db;border-radius:7px;background:#fff;cursor:pointer;">Refresh</button>
+    </div>
+    <div id="pending-list"><div class="loading-state">Loading…</div></div>
+  </div>
+</div>
+
+<footer>Tratify — verified travel announcements for AI agents &amp; travellers — ETH Zürich student initiative — For people. For Switzerland.</footer>
 
 <script>
-  const DATA = [
-    { id:"ch_001", status:"partial", type:"gov", title:"Jungfraujoch — top of Europe operating on reduced schedule", place:"Interlaken, Bern", body:"Spring timetable in effect until May 31. Last train up at 14:00 instead of 16:00. Summit restaurant fully open. Glacier Plateau accessible.", source:"Jungfrau Railways AG", time:"1 hour ago", verified:true },
-    { id:"ch_002", status:"closed", type:"construction", title:"A2 Gotthard tunnel — overnight closures Mon–Thu until June 15", place:"Airolo, Ticino", body:"Northbound tunnel closed 21:00–05:00 for safety lining works. Use A13 San Bernardino pass as alternative. Southbound unaffected.", source:"ASTRA Federal Roads Office", time:"3 hours ago", verified:true },
-    { id:"ch_003", status:"open", type:"gov", title:"Château de Chillon reopens after winter restoration", place:"Veytaux, Vaud", body:"All towers and dungeons accessible. New multimedia exhibition on the history of Savoy on Level 2. Audio guides in 8 languages.", source:"Château de Chillon Foundation", time:"2 days ago", verified:true },
-    { id:"ch_004", status:"closed", type:"gov", title:"Rheinfall viewpoint platform B closed for structural works", place:"Schaffhausen", body:"Platform B (closest to the falls) closed until April 30. Platforms A and C remain open. Boat tours operating normally.", source:"Canton Schaffhausen Tourism", time:"5 hours ago", verified:true },
-    { id:"ch_005", status:"open", type:"gov", title:"Swiss National Museum Zurich — special exhibition opens April 21", place:"Zurich", body:"New exhibition 'Switzerland and the Alps' opens Monday. Extended hours until 20:00 on Thursdays. Permanent collection fully accessible.", source:"Swiss National Museum", time:"12 hours ago", verified:true },
-    { id:"ch_006", status:"partial", type:"construction", title:"Lugano funicular reduced service — rack replacement project", place:"Lugano, Ticino", body:"Funicular running every 30 min instead of 15 min. Upper station shops closed. Expected full service restoration by May 20.", source:"Lugano Municipality", time:"1 day ago", verified:true },
-    { id:"ch_007", status:"open", type:"gov", title:"Lauterbrunnen valley — all hiking trails open after winter", place:"Lauterbrunnen, Bern", body:"72 km of valley trails cleared and signed. Staubbach Falls viewing platform reopened. Trümmelbach Falls opens May 1.", source:"Jungfrau Region Tourism", time:"2 days ago", verified:true },
-    { id:"ch_008", status:"closed", type:"construction", title:"Bern Bundesplatz — closed for federal celebration setup Apr 19–21", place:"Bern", body:"Square fully closed to the public this weekend. Normal access resumes Monday April 22. Kramgasse and Münstergasse unaffected.", source:"City of Bern", time:"30 min ago", verified:true }
-  ];
+/* ═══════════════════════════════════════════════════
+   CONFIGURATION — fill these in after Supabase setup
+═══════════════════════════════════════════════════ */
+const SUPABASE_URL      = "https://cyuyxjfaubifokxypntb.supabase.co";       // e.g. https://xyzxyz.supabase.co
+const SUPABASE_ANON_KEY = "sb_publishable_Bjkvh2PCRJz2XU2ohciEDQ_k7RCQoK0";  // from Supabase → Settings → API
+const ANTHROPIC_API_KEY = "YOUR_ANTHROPIC_API_KEY";  // from console.anthropic.com
+const ADMIN_PASSWORD    = "12313";      // choose any password
 
-  let filter = "all", search = "";
+/* ═══════════════════════════════════════════════════
+   SUPABASE INIT
+═══════════════════════════════════════════════════ */
+let supabase = null;
+const supabaseReady = SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
+if (supabaseReady) {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+  document.getElementById("supabase-post-notice").style.display = "block";
+}
 
-  function statusBadge(s) {
-    if (s === "open")    return `<span class="badge b-open">Open</span>`;
-    if (s === "closed")  return `<span class="badge b-closed">Closed</span>`;
-    return `<span class="badge b-partial">Partial</span>`;
+/* ═══════════════════════════════════════════════════
+   DEMO DATA (shown when Supabase is not configured
+   or has no announcements yet)
+═══════════════════════════════════════════════════ */
+const DEMO = [
+  { id:"demo_001", region:"ch", status:"partial", type:"gov", orig_lang:"de", orig_title:"Jungfraujoch – eingeschränkter Betrieb bis 31. Mai", orig_body:"Frühlingsfahrplan in Kraft. Letzter Zug bergwärts um 14:00 Uhr statt 16:00 Uhr. Gipfelrestaurant und Gletscherplateau geöffnet.", place:"Interlaken, Bern, Switzerland", source_org:"Jungfrau Railways AG", created_at: new Date(Date.now()-3600000).toISOString(), verified:true, is_demo:true },
+  { id:"demo_002", region:"ch", status:"closed", type:"construction", orig_lang:"de", orig_title:"A2 Gotthard-Tunnel — Nachtsperrung Mo–Do bis 15. Juni", orig_body:"Nordröhre 21:00–05:00 Uhr gesperrt für Sicherheitsauskleidungsarbeiten. A13 San Bernardino als Alternative.", place:"Airolo, Ticino, Switzerland", source_org:"ASTRA Federal Roads Office", created_at: new Date(Date.now()-10800000).toISOString(), verified:true, is_demo:true },
+  { id:"demo_003", region:"jp", status:"closed", type:"construction", orig_lang:"ja", orig_title:"上高地バスターミナル — 4月27日まで工事のため閉鎖", orig_body:"バスターミナル改修工事のため全施設閉鎖。釜トンネルからのアクセス不可。5月1日再開予定。", place:"Kamikochi, Nagano, Japan", source_org:"Matsumoto City Office", created_at: new Date(Date.now()-7200000).toISOString(), verified:true, is_demo:true },
+  { id:"demo_004", region:"fr", status:"open", type:"gov", orig_lang:"fr", orig_title:"Musée du Louvre — aile Richelieu entièrement accessible après restauration", orig_body:"L'aile Richelieu est désormais entièrement ouverte. Réservation en ligne obligatoire les week-ends.", place:"Paris, France", source_org:"Ministère de la Culture", created_at: new Date(Date.now()-86400000).toISOString(), verified:true, is_demo:true },
+  { id:"demo_005", region:"ae", status:"partial", type:"construction", orig_lang:"ar", orig_title:"برج خليفة — الطوابق العليا مغلقة للصيانة حتى 15 مايو", orig_body:"الطوابق من 124 إلى 148 مغلقة. منصة الطابق 124 مفتوحة. يُنصح بالحجز المسبق.", place:"Dubai, UAE", source_org:"Emaar Properties", created_at: new Date(Date.now()-21600000).toISOString(), verified:true, is_demo:true },
+  { id:"demo_006", region:"de", status:"open", type:"gov", orig_lang:"de", orig_title:"Schloss Neuschwanstein — nach Winterpause wieder vollständig geöffnet", orig_body:"Alle Räume zugänglich. Neue Audioguides in 12 Sprachen. Tickets ausschließlich online buchbar. Letzter Einlass 17:00.", place:"Schwangau, Bavaria, Germany", source_org:"Bayerische Schlösserverwaltung", created_at: new Date(Date.now()-14400000).toISOString(), verified:true, is_demo:true },
+];
+
+const LANG_NAMES = { en:"English", de:"Deutsch", fr:"Français", ja:"Japanese", zh:"Chinese", ar:"Arabic", es:"Español", it:"Italiano", pt:"Português", ko:"Korean" };
+const ORIG_LANG_LABELS = { de:"German", ja:"Japanese", fr:"French", ar:"Arabic", zh:"Chinese", it:"Italian", en:"English", es:"Spanish" };
+
+let allAnnouncements = [];
+let currentLang = "en", currentRegion = "all", searchQ = "";
+
+/* ═══════════════════════════════════════════════════
+   LOAD ANNOUNCEMENTS FROM SUPABASE (or fallback)
+═══════════════════════════════════════════════════ */
+async function loadAnnouncements() {
+  if (!supabaseReady) { allAnnouncements = DEMO; renderBoard(); return; }
+  try {
+    const { data, error } = await supabase
+      .from("announcements")
+      .select("*")
+      .eq("verified", true)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    allAnnouncements = data && data.length > 0 ? data : DEMO;
+    renderBoard();
+  } catch (e) {
+    console.warn("Supabase load failed, using demo data:", e);
+    allAnnouncements = DEMO;
+    renderBoard();
   }
-  function typeBadge(t) {
-    return t === "gov"
-      ? `<span class="badge b-gov">Government</span>`
-      : `<span class="badge b-construction">Construction</span>`;
-  }
+}
 
-  function renderBoard() {
-    const list = document.getElementById("card-list");
-    const q = search.toLowerCase();
-    const shown = DATA.filter(a => {
-      const mf = filter === "all" || a.status === filter || a.type === filter;
-      const ms = !q || a.title.toLowerCase().includes(q) || a.place.toLowerCase().includes(q) || a.body.toLowerCase().includes(q);
-      return mf && ms;
-    });
-    document.getElementById("stat-active").textContent   = DATA.filter(a => a.status !== "closed").length;
-    document.getElementById("stat-verified").textContent = DATA.filter(a => a.verified).length;
-    if (!shown.length) { list.innerHTML = `<div class="empty">No announcements match your filters.</div>`; return; }
-    list.innerHTML = shown.map(a => `
-      <div class="card">
-        <div class="card-head">
-          <div>
-            <div class="card-title">${a.title}</div>
-            <div class="card-meta">${statusBadge(a.status)}${typeBadge(a.type)}<span class="badge b-verified">Verified</span><span class="card-place">${a.place}</span></div>
+/* ═══════════════════════════════════════════════════
+   RENDER BOARD
+═══════════════════════════════════════════════════ */
+function relativeTime(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return mins + "m ago";
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + "h ago";
+  return Math.floor(hrs / 24) + "d ago";
+}
+function statusBadge(s) {
+  if (s === "open")   return `<span class="badge b-open">Open</span>`;
+  if (s === "closed") return `<span class="badge b-closed">Closed</span>`;
+  return `<span class="badge b-partial">Partial</span>`;
+}
+function typeBadge(t) {
+  if (t === "gov")          return `<span class="badge b-gov">Government</span>`;
+  if (t === "construction") return `<span class="badge b-construction">Construction</span>`;
+  return `<span class="badge b-operator">Operator</span>`;
+}
+
+function renderBoard() {
+  const list = document.getElementById("card-list");
+  const q = searchQ.toLowerCase();
+  const shown = allAnnouncements.filter(a => {
+    const mr = currentRegion === "all" || a.region === currentRegion;
+    const ms = !q || (a.orig_title||"").toLowerCase().includes(q) || (a.place||"").toLowerCase().includes(q) || (a.orig_body||"").toLowerCase().includes(q);
+    return mr && ms;
+  });
+  document.getElementById("s-live").textContent = allAnnouncements.filter(a => a.status !== "closed").length;
+  document.getElementById("s-langs").textContent = [...new Set(allAnnouncements.map(a => a.orig_lang).filter(Boolean))].length;
+  document.getElementById("s-regions").textContent = [...new Set(allAnnouncements.map(a => a.region).filter(Boolean))].length;
+  if (!shown.length) { list.innerHTML = `<div class="empty">No announcements for this region.</div>`; return; }
+  list.innerHTML = shown.map(a => {
+    const showBtn = a.orig_lang !== currentLang;
+    const langLabel = ORIG_LANG_LABELS[a.orig_lang] || a.orig_lang || "?";
+    return `<div class="card" data-id="${a.id}">
+      <div class="card-head">
+        <div>
+          <div class="card-title">${a.orig_title || "(no title)"}</div>
+          <div class="card-meta">
+            ${statusBadge(a.status)}${typeBadge(a.type)}
+            <span class="badge b-verified">Verified</span>
+            <span class="badge b-lang">${langLabel}</span>
+            ${a.is_demo ? `<span class="badge b-demo">Demo</span>` : ""}
+            <span class="card-place">${a.place || ""}</span>
           </div>
-          <span class="card-time">${a.time}</span>
         </div>
-        <div class="card-body">${a.body}</div>
-        <div class="card-foot">
-          <div class="source-lbl"><div class="vdot"></div>${a.source}</div>
-          <span class="badge b-ai" style="font-size:11px;">AI-readable</span>
-        </div>
-      </div>`).join("");
+        <span class="card-time">${relativeTime(a.created_at)}</span>
+      </div>
+      <div class="card-body">${a.orig_body || ""}</div>
+      <div class="card-foot">
+        <div class="source-lbl"><div class="vdot"></div>${a.source_org || "Unknown source"}</div>
+        ${showBtn
+          ? `<button class="translate-btn" onclick="doTranslate(this.closest('.card'),'${a.id}')">Translate to ${LANG_NAMES[currentLang]}</button>`
+          : `<span style="font-size:12px;color:#9ca3af;">Posted in your language</span>`}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ═══════════════════════════════════════════════════
+   AI TRANSLATION
+═══════════════════════════════════════════════════ */
+async function doTranslate(card, id) {
+  const ann = allAnnouncements.find(a => String(a.id) === String(id));
+  if (!ann) return;
+  const btn = card.querySelector(".translate-btn");
+  const existing = card.querySelector(".translated-box");
+  if (existing) { existing.remove(); if (btn) btn.textContent = "Translate to " + LANG_NAMES[currentLang]; return; }
+  if (!btn) return;
+  btn.classList.add("loading"); btn.textContent = "Translating…";
+  const targetLang = LANG_NAMES[currentLang];
+  if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY !== "YOUR_ANTHROPIC_API_KEY") {
+    try {
+      const prompt = `Translate to ${targetLang}. Preserve all place names, road codes, times, dates, and authority names exactly. Return ONLY valid JSON with keys "title" and "body".\n\nTitle: ${ann.orig_title}\nBody: ${ann.orig_body}`;
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 500, messages: [{ role: "user", content: prompt }] })
+      });
+      const data = await res.json();
+      const raw = data.content.map(i => i.text || "").join("").replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(raw);
+      showTranslated(card, btn, parsed.title, parsed.body, targetLang, true);
+      return;
+    } catch(e) { /* fall through */ }
+  }
+  btn.classList.remove("loading");
+  btn.textContent = "Add API key to translate";
+}
+
+function showTranslated(card, btn, title, body, langName, live) {
+  const box = document.createElement("div");
+  box.className = "translated-box";
+  box.innerHTML = `<div class="translated-lbl"><div class="ai-dot"></div>${live ? "AI translation" : "Translation"} — ${langName}</div><div class="translated-title">${title}</div><div class="translated-body">${body}</div>`;
+  card.appendChild(box);
+  btn.classList.remove("loading");
+  btn.textContent = "Hide translation";
+}
+
+/* ═══════════════════════════════════════════════════
+   POST FORM SUBMISSION
+═══════════════════════════════════════════════════ */
+function selectVerify(el) {
+  document.querySelectorAll(".verify-opt").forEach(x => x.classList.remove("selected"));
+  el.classList.add("selected");
+}
+
+async function submitForm() {
+  const title  = document.getElementById("f-title").value.trim();
+  const loc    = document.getElementById("f-location").value.trim();
+  const status = document.getElementById("f-status").value;
+  const org    = document.getElementById("f-org").value.trim();
+  const body   = document.getElementById("f-body").value.trim();
+  const region = document.getElementById("f-region").value;
+  const lang   = document.getElementById("f-postlang").value;
+  const email  = document.getElementById("f-email").value.trim();
+  const type   = document.querySelector(".verify-opt.selected")?.dataset.vtype || "gov";
+  const start  = document.getElementById("f-start").value || null;
+  const end    = document.getElementById("f-end").value || null;
+
+  document.getElementById("success-msg").style.display = "none";
+  document.getElementById("error-msg").style.display = "none";
+
+  if (!title || !loc || !status || !org || !body) {
+    alert("Please fill in title, location, status, organisation, and description."); return;
   }
 
-  document.querySelectorAll(".fbtn").forEach(b => {
-    b.addEventListener("click", () => {
-      document.querySelectorAll(".fbtn").forEach(x => x.classList.remove("active"));
-      b.classList.add("active"); filter = b.dataset.filter; renderBoard();
-    });
-  });
-  document.getElementById("search-input").addEventListener("input", e => { search = e.target.value; renderBoard(); });
+  const btn = document.getElementById("submit-btn");
+  btn.disabled = true; btn.textContent = "Submitting…";
 
-  document.querySelectorAll(".tp-tab").forEach(t => {
-    t.addEventListener("click", () => {
-      document.querySelectorAll(".tp-tab").forEach(x => x.classList.remove("active"));
-      document.querySelectorAll(".tp-page").forEach(x => x.classList.remove("active"));
-      t.classList.add("active");
-      document.getElementById("tab-" + t.dataset.tab).classList.add("active");
-    });
-  });
-
-  function selectVerify(el) {
-    document.querySelectorAll(".verify-opt").forEach(x => x.classList.remove("selected"));
-    el.classList.add("selected");
-  }
-
-  function submitForm() {
-    const title  = document.getElementById("f-title").value.trim();
-    const loc    = document.getElementById("f-location").value.trim();
-    const status = document.getElementById("f-status").value;
-    const org    = document.getElementById("f-org").value.trim();
-    if (!title || !loc || !status || !org) { alert("Please fill in title, location, status, and organisation name."); return; }
-    const btn = document.getElementById("submit-btn");
-    btn.disabled = true; btn.textContent = "Submitting...";
+  if (!supabaseReady) {
     setTimeout(() => {
       document.getElementById("success-msg").style.display = "block";
-      btn.textContent = "Submitted";
-    }, 900);
+      document.getElementById("success-msg").textContent = "⚠️ Demo mode: Supabase not configured. In production, this would save to your database and appear in the admin panel for approval.";
+      btn.disabled = false; btn.textContent = "Submit for verification";
+    }, 800);
+    return;
   }
 
-  function setQuery(q) { document.getElementById("ai-query").value = q; runQuery(); }
-
-  function runQuery() {
-    const raw = document.getElementById("ai-query").value.trim();
-    if (!raw) return;
-    const q = raw.toLowerCase();
-    let results = DATA;
-    if (q.includes("jungfrau"))                        results = DATA.filter(a => a.title.toLowerCase().includes("jungfrau") || a.place.toLowerCase().includes("interlaken"));
-    else if (q.includes("zurich"))                     results = DATA.filter(a => a.place.toLowerCase().includes("zurich"));
-    else if (q.includes("closed"))                     results = DATA.filter(a => a.status === "closed");
-    else if (q.includes("open"))                       results = DATA.filter(a => a.status === "open");
-    else if (q.includes("construction"))               results = DATA.filter(a => a.type === "construction");
-    else if (q.includes("government") || q.includes("gov")) results = DATA.filter(a => a.type === "gov");
-    const resp = {
-      query: raw, timestamp: new Date().toISOString(), country: "CH",
-      source: "Tratify Live Feed", total_results: results.length,
-      results: results.map(a => ({ id: a.id, title: a.title, location: a.place, status: a.status, type: a.type, verified: a.verified, source_org: a.source, description: a.body, last_updated: a.time }))
-    };
-    const wrap = document.getElementById("json-wrap");
-    wrap.style.display = "block";
-    document.getElementById("json-label").textContent = `${results.length} result${results.length !== 1 ? "s" : ""} for "${raw}"`;
-    document.getElementById("json-output").textContent = JSON.stringify(resp, null, 2);
+  try {
+    const { error } = await supabase.from("announcements").insert([{
+      orig_title: title,
+      orig_body:  body,
+      place:      loc,
+      region,
+      status,
+      type,
+      orig_lang:  lang,
+      source_org: org,
+      contact_email: email || null,
+      start_date: start,
+      end_date:   end,
+      verified:   false
+    }]);
+    if (error) throw error;
+    document.getElementById("success-msg").style.display = "block";
+    btn.textContent = "Submitted ✓";
+    ["f-title","f-location","f-body","f-org","f-email"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("f-status").value = "";
+  } catch(e) {
+    console.error(e);
+    document.getElementById("error-msg").style.display = "block";
+    btn.disabled = false; btn.textContent = "Submit for verification";
   }
+}
 
-  function copyJson() {
-    navigator.clipboard.writeText(document.getElementById("json-output").textContent).then(() => {
-      const b = document.querySelector(".copy-btn"); b.textContent = "Copied!";
-      setTimeout(() => b.textContent = "Copy JSON", 1500);
-    });
+/* ═══════════════════════════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════════════════════════ */
+function unlockAdmin() {
+  const pw = document.getElementById("admin-pw").value;
+  if (pw === ADMIN_PASSWORD) {
+    document.getElementById("admin-lock").style.display = "none";
+    document.getElementById("admin-panel").classList.add("visible");
+    loadPending();
+  } else {
+    document.getElementById("pw-error").style.display = "block";
   }
+}
 
-  renderBoard();
+async function loadPending() {
+  const list = document.getElementById("pending-list");
+  if (!supabaseReady) {
+    list.innerHTML = `<div class="no-pending">Supabase not configured — pending announcements will appear here once connected.</div>`;
+    return;
+  }
+  list.innerHTML = `<div class="loading-state">Loading…</div>`;
+  try {
+    const { data, error } = await supabase
+      .from("announcements")
+      .select("*")
+      .eq("verified", false)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      list.innerHTML = `<div class="no-pending">✅ No pending announcements — all clear!</div>`;
+      return;
+    }
+    list.innerHTML = data.map(a => `
+      <div class="pending-card" id="pending-${a.id}">
+        <div class="card-head">
+          <div>
+            <div class="card-title">${a.orig_title}</div>
+            <div class="card-meta">
+              ${statusBadge(a.status)}${typeBadge(a.type)}
+              <span class="badge b-lang">${ORIG_LANG_LABELS[a.orig_lang] || a.orig_lang}</span>
+              <span class="card-place">${a.place}</span>
+            </div>
+          </div>
+          <span class="card-time">${relativeTime(a.created_at)}</span>
+        </div>
+        <div class="card-body" style="margin-top:8px;">${a.orig_body}</div>
+        <div style="font-size:12px;color:#6b7280;margin-top:8px;">
+          Source: <strong>${a.source_org}</strong>${a.contact_email ? ` · ${a.contact_email}` : ""}
+        </div>
+        <div class="pending-actions">
+          <button class="approve-btn" onclick="approveAnnouncement('${a.id}')">✓ Approve &amp; publish</button>
+          <button class="reject-btn"  onclick="rejectAnnouncement('${a.id}')">✕ Reject</button>
+        </div>
+      </div>`).join("");
+  } catch(e) {
+    list.innerHTML = `<div class="no-pending" style="color:#991b1b;">Error loading pending announcements.</div>`;
+  }
+}
+
+async function approveAnnouncement(id) {
+  const { error } = await supabase.from("announcements").update({ verified: true }).eq("id", id);
+  if (!error) {
+    document.getElementById("pending-" + id)?.remove();
+    if (!document.querySelector(".pending-card")) {
+      document.getElementById("pending-list").innerHTML = `<div class="no-pending">✅ No pending announcements — all clear!</div>`;
+    }
+    loadAnnouncements();
+  }
+}
+async function rejectAnnouncement(id) {
+  if (!confirm("Delete this announcement permanently?")) return;
+  const { error } = await supabase.from("announcements").delete().eq("id", id);
+  if (!error) {
+    document.getElementById("pending-" + id)?.remove();
+    if (!document.querySelector(".pending-card")) {
+      document.getElementById("pending-list").innerHTML = `<div class="no-pending">✅ No pending announcements — all clear!</div>`;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   AI QUERY TAB
+═══════════════════════════════════════════════════ */
+function setQuery(q) { document.getElementById("ai-query").value = q; runQuery(); }
+function runQuery() {
+  const raw = document.getElementById("ai-query").value.trim();
+  if (!raw) return;
+  const q = raw.toLowerCase();
+  let results = allAnnouncements;
+  if (q.includes("jungfrau"))                                results = allAnnouncements.filter(a => (a.orig_title||"").toLowerCase().includes("jungfrau"));
+  else if (q.includes("japan") || q.includes("kamikochi"))   results = allAnnouncements.filter(a => a.region === "jp");
+  else if (q.includes("closed"))                             results = allAnnouncements.filter(a => a.status === "closed");
+  else if (q.includes("open"))                               results = allAnnouncements.filter(a => a.status === "open");
+  else if (q.includes("construction"))                       results = allAnnouncements.filter(a => a.type === "construction");
+  else if (q.includes("france") || q.includes("louvre"))     results = allAnnouncements.filter(a => a.region === "fr");
+  else if (q.includes("dubai") || q.includes("uae"))         results = allAnnouncements.filter(a => a.region === "ae");
+  else if (q.includes("china"))                              results = allAnnouncements.filter(a => a.region === "cn");
+  else if (q.includes("government"))                         results = allAnnouncements.filter(a => a.type === "gov");
+  const resp = {
+    query: raw, timestamp: new Date().toISOString(), response_language: currentLang,
+    source: "Tratify Live Feed v1", total_results: results.length,
+    results: results.map(a => ({
+      id: a.id, region: a.region, status: a.status, type: a.type,
+      verified: a.verified, source_org: a.source_org, location: a.place,
+      original_language: a.orig_lang, original_title: a.orig_title, original_body: a.orig_body,
+      last_updated: relativeTime(a.created_at)
+    }))
+  };
+  document.getElementById("json-wrap").style.display = "block";
+  document.getElementById("json-label").textContent = `${results.length} result${results.length !== 1 ? "s" : ""} for "${raw}"`;
+  document.getElementById("json-output").textContent = JSON.stringify(resp, null, 2);
+}
+function copyJson() {
+  navigator.clipboard.writeText(document.getElementById("json-output").textContent).then(() => {
+    const b = document.querySelector(".copy-btn"); b.textContent = "Copied!";
+    setTimeout(() => b.textContent = "Copy JSON", 1500);
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   TABS / FILTERS / SEARCH
+═══════════════════════════════════════════════════ */
+document.querySelectorAll(".tab").forEach(t => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    document.getElementById("tab-" + t.dataset.tab).classList.add("active");
+  });
+});
+document.querySelectorAll(".lang-btn").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".lang-btn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active"); currentLang = b.dataset.lang; renderBoard();
+  });
+});
+document.querySelectorAll(".rbtn").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".rbtn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active"); currentRegion = b.dataset.region; renderBoard();
+  });
+});
+document.getElementById("search").addEventListener("input", e => { searchQ = e.target.value; renderBoard(); });
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+loadAnnouncements();
 </script>
 </body>
 </html>
