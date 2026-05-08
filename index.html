@@ -232,7 +232,7 @@
 <!-- ══════════════ POST ══════════════ -->
 <div class="page" id="tab-post">
   <div id="supabase-post-notice" class="config-notice" style="display:none;">
-    <strong>Supabase not configured.</strong> Add your <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> at the top of this file to enable real submissions.
+    <strong>Demo mode.</strong> Backend configuration is not loaded, so submissions are simulated locally. In production, inject <code>window.TRATIFY_CONFIG</code> from a backend or deployment secret.
   </div>
   <div class="form-card">
     <div class="form-row">
@@ -390,22 +390,35 @@
 
 <script>
 /* ═══════════════════════════════════════════════════
-   CONFIGURATION — fill these in after Supabase setup
+   CONFIGURATION — inject via deployment/backend secrets
 ═══════════════════════════════════════════════════ */
-const SUPABASE_URL      = "https://cyuyxjfaubifokxypntb.supabase.co";       // e.g. https://xyzxyz.supabase.co
-const SUPABASE_ANON_KEY = "sb_publishable_Bjkvh2PCRJz2XU2ohciEDQ_k7RCQoK0";  // from Supabase → Settings → API
-const ANTHROPIC_API_KEY = "YOUR_ANTHROPIC_API_KEY";  // from console.anthropic.com
-const ADMIN_PASSWORD    = "12313";      // choose any password
+// Do not commit real service keys/passwords in this static file.
+// For a static demo, leave these blank: the UI will use safe demo data and all buttons still work.
+// In production, inject config before this script, e.g. window.TRATIFY_CONFIG = { supabaseUrl, supabaseAnonKey }.
+const CONFIG = window.TRATIFY_CONFIG || {};
+const SUPABASE_URL      = CONFIG.supabaseUrl || "";
+const SUPABASE_ANON_KEY = CONFIG.supabaseAnonKey || "";
+const ANTHROPIC_API_KEY = CONFIG.anthropicApiKey || "";
+const ADMIN_PASSWORD    = CONFIG.adminPassword || "";
 
 /* ═══════════════════════════════════════════════════
    SUPABASE INIT
 ═══════════════════════════════════════════════════ */
-let supabase = null;
-const supabaseReady = SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
+let supabaseClient = null;
+const supabaseReady = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase);
 if (supabaseReady) {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } else {
   document.getElementById("supabase-post-notice").style.display = "block";
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /* ═══════════════════════════════════════════════════
@@ -433,7 +446,7 @@ let currentLang = "en", currentRegion = "all", searchQ = "";
 async function loadAnnouncements() {
   if (!supabaseReady) { allAnnouncements = DEMO; renderBoard(); return; }
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("announcements")
       .select("*")
       .eq("verified", true)
@@ -537,14 +550,33 @@ async function doTranslate(card, id) {
       return;
     } catch(e) { /* fall through */ }
   }
-  btn.classList.remove("loading");
-  btn.textContent = "Add API key to translate";
+  const fallback = localTranslate(ann, currentLang);
+  showTranslated(card, btn, fallback.title, fallback.body, targetLang, false);
+}
+
+function localTranslate(ann, lang) {
+  const labels = {
+    en: { title: "Translation unavailable", body: "AI translation is not configured yet. Original announcement shown below." },
+    de: { title: "Übersetzung nicht verfügbar", body: "Die KI-Übersetzung ist noch nicht konfiguriert. Unten steht die Originalmeldung." },
+    fr: { title: "Traduction indisponible", body: "La traduction IA n’est pas encore configurée. L’annonce originale est affichée ci-dessous." },
+    ja: { title: "翻訳は利用できません", body: "AI翻訳はまだ設定されていません。以下に原文を表示します。" },
+    zh: { title: "翻译不可用", body: "尚未配置 AI 翻译。以下显示原始公告。" },
+    ar: { title: "الترجمة غير متاحة", body: "لم يتم إعداد ترجمة الذكاء الاصطناعي بعد. يظهر الإعلان الأصلي أدناه." },
+    es: { title: "Traducción no disponible", body: "La traducción con IA aún no está configurada. Se muestra el anuncio original abajo." },
+    it: { title: "Traduzione non disponibile", body: "La traduzione AI non è ancora configurata. Di seguito è mostrato l’annuncio originale." },
+    pt: { title: "Tradução indisponível", body: "A tradução por IA ainda não está configurada. O anúncio original aparece abaixo." },
+    ko: { title: "번역을 사용할 수 없음", body: "AI 번역이 아직 설정되지 않았습니다. 아래에 원문 공지를 표시합니다." }
+  };
+  const msg = labels[lang] || labels.en;
+  return { title: `${msg.title}: ${ann.orig_title || ""}`, body: `${msg.body}
+
+${ann.orig_body || ""}` };
 }
 
 function showTranslated(card, btn, title, body, langName, live) {
   const box = document.createElement("div");
   box.className = "translated-box";
-  box.innerHTML = `<div class="translated-lbl"><div class="ai-dot"></div>${live ? "AI translation" : "Translation"} — ${langName}</div><div class="translated-title">${title}</div><div class="translated-body">${body}</div>`;
+  box.innerHTML = `<div class="translated-lbl"><div class="ai-dot"></div>${live ? "AI translation" : "Demo translation"} — ${escapeHtml(langName)}</div><div class="translated-title">${escapeHtml(title)}</div><div class="translated-body">${escapeHtml(body)}</div>`;
   card.appendChild(box);
   btn.classList.remove("loading");
   btn.textContent = "Hide translation";
@@ -584,14 +616,14 @@ async function submitForm() {
   if (!supabaseReady) {
     setTimeout(() => {
       document.getElementById("success-msg").style.display = "block";
-      document.getElementById("success-msg").textContent = "⚠️ Demo mode: Supabase not configured. In production, this would save to your database and appear in the admin panel for approval.";
+      document.getElementById("success-msg").textContent = "⚠️ Demo mode: backend not configured. In production, this would save to your database and appear in the admin panel for approval.";
       btn.disabled = false; btn.textContent = "Submit for verification";
     }, 800);
     return;
   }
 
   try {
-    const { error } = await supabase.from("announcements").insert([{
+    const { error } = await supabaseClient.from("announcements").insert([{
       orig_title: title,
       orig_body:  body,
       place:      loc,
@@ -622,6 +654,11 @@ async function submitForm() {
 ═══════════════════════════════════════════════════ */
 function unlockAdmin() {
   const pw = document.getElementById("admin-pw").value;
+  if (!ADMIN_PASSWORD) {
+    document.getElementById("pw-error").textContent = "Admin is disabled in the static demo. Configure it on a backend before production.";
+    document.getElementById("pw-error").style.display = "block";
+    return;
+  }
   if (pw === ADMIN_PASSWORD) {
     document.getElementById("admin-lock").style.display = "none";
     document.getElementById("admin-panel").classList.add("visible");
@@ -634,12 +671,12 @@ function unlockAdmin() {
 async function loadPending() {
   const list = document.getElementById("pending-list");
   if (!supabaseReady) {
-    list.innerHTML = `<div class="no-pending">Supabase not configured — pending announcements will appear here once connected.</div>`;
+    list.innerHTML = `<div class="no-pending">Backend not configured — pending announcements will appear here once connected.</div>`;
     return;
   }
   list.innerHTML = `<div class="loading-state">Loading…</div>`;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("announcements")
       .select("*")
       .eq("verified", false)
@@ -677,7 +714,7 @@ async function loadPending() {
 }
 
 async function approveAnnouncement(id) {
-  const { error } = await supabase.from("announcements").update({ verified: true }).eq("id", id);
+  const { error } = await supabaseClient.from("announcements").update({ verified: true }).eq("id", id);
   if (!error) {
     document.getElementById("pending-" + id)?.remove();
     if (!document.querySelector(".pending-card")) {
@@ -688,7 +725,7 @@ async function approveAnnouncement(id) {
 }
 async function rejectAnnouncement(id) {
   if (!confirm("Delete this announcement permanently?")) return;
-  const { error } = await supabase.from("announcements").delete().eq("id", id);
+  const { error } = await supabaseClient.from("announcements").delete().eq("id", id);
   if (!error) {
     document.getElementById("pending-" + id)?.remove();
     if (!document.querySelector(".pending-card")) {
