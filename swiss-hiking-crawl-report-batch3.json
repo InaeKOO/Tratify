@@ -1,0 +1,110 @@
+{
+  "inserted": 15,
+  "reports": [
+    {
+      "target": "Männlichen",
+      "status": "partial",
+      "title": "Männlichen operating info — The Grindelwald-Männlichen Gondola and the aerial cableway Wengen-Männlichen are closed for maintenance work.",
+      "text_len": 441,
+      "url": "https://www.maennlichen.ch/en/live.html"
+    },
+    {
+      "target": "Stockhorn",
+      "status": "open",
+      "title": "Stockhorn operating info checked — live conditions page available",
+      "text_len": 661,
+      "url": "https://stockhorn.ch/en/live/"
+    },
+    {
+      "target": "Wiriehorn",
+      "status": "open",
+      "title": "Wiriehorn operating info checked — live conditions page available",
+      "text_len": 1177,
+      "url": "https://www.wiriehorn.ch/en/live"
+    },
+    {
+      "target": "Klewenalp-Stockhütte",
+      "status": "partial",
+      "title": "Klewenalp-Stockhütte operating info — Winter Hiking & Snowshoeing",
+      "text_len": 1446,
+      "url": "https://www.klewenalp.ch/en/live/operating-hours"
+    },
+    {
+      "target": "Bannalp",
+      "status": "open",
+      "title": "Bannalp operating info checked — live conditions page available",
+      "text_len": 67,
+      "url": "https://www.bannalp.ch/en/live/"
+    },
+    {
+      "target": "Sattel-Hochstuckli",
+      "status": "partial",
+      "title": "Sattel-Hochstuckli operating info — Bis Ende Mai geschlossen. Closed until end of May.",
+      "text_len": 2420,
+      "url": "https://www.sattel-hochstuckli.ch/en/live"
+    },
+    {
+      "target": "Hoch-Ybrig",
+      "status": "partial",
+      "title": "Hoch-Ybrig operating info — Snow Adventure with Electric Caterpillar",
+      "text_len": 2052,
+      "url": "https://www.hoch-ybrig.ch/en/live"
+    },
+    {
+      "target": "Atzmännig",
+      "status": "open",
+      "title": "Atzmännig operating info checked — live conditions page available",
+      "text_len": 325,
+      "url": "https://www.atzmaennig.ch/en/live"
+    },
+    {
+      "target": "Chäserrugg Toggenburg",
+      "status": "open",
+      "title": "Chäserrugg Toggenburg operating info — nach Betriebsschluss und im Sommer bitte Notruf 144 wählen",
+      "text_len": 783,
+      "url": "https://chäserrugg.ch/en/live/"
+    },
+    {
+      "target": "Wildhaus",
+      "status": "open",
+      "title": "Wildhaus operating info checked — live conditions page available",
+      "text_len": 661,
+      "url": "https://www.wildhaus.ch/en/live"
+    },
+    {
+      "target": "Belalp",
+      "status": "partial",
+      "title": "Belalp operating info — Skiing & Snowboarding",
+      "text_len": 2160,
+      "url": "https://www.belalp.ch/en/live/operating-hours"
+    },
+    {
+      "target": "Grächen",
+      "status": "open",
+      "title": "Grächen operating info checked — live conditions page available",
+      "text_len": 326,
+      "url": "https://www.graechen.ch/en/live/operating-hours"
+    },
+    {
+      "target": "Nendaz",
+      "status": "open",
+      "title": "Nendaz operating info — Hiking trails",
+      "text_len": 1104,
+      "url": "https://www.nendaz.ch/en/P87367/opening-status"
+    },
+    {
+      "target": "Anzère",
+      "status": "open",
+      "title": "Anzère operating info checked — live conditions page available",
+      "text_len": 336,
+      "url": "https://www.anzere.ch/en/live/"
+    },
+    {
+      "target": "Leysin",
+      "status": "open",
+      "title": "Leysin operating info checked — live conditions page available",
+      "text_len": 1024,
+      "url": "https://www.alpesvaudoises.ch/en/stories/live-info"
+    }
+  ]
+}

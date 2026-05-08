@@ -1,0 +1,201 @@
+{
+  "inserted": 28,
+  "reports": [
+    {
+      "target": "Jungfrau Region",
+      "status": "open",
+      "title": "Jungfrau Region operating info checked — live conditions page available",
+      "text_len": 215,
+      "url": "https://www.jungfrau.ch/en-gb/live/"
+    },
+    {
+      "target": "Zermatt Matterhorn",
+      "status": "open",
+      "title": "Zermatt Matterhorn operating info checked — live conditions page available",
+      "text_len": 1926,
+      "url": "https://www.matterhornparadise.ch/en/book/operating-hours"
+    },
+    {
+      "target": "Pilatus",
+      "status": "partial",
+      "title": "Pilatus operating info — Hiking trails to Pilatus Kulm covered in snow.",
+      "text_len": 2047,
+      "url": "https://www.pilatus.ch/en/live"
+    },
+    {
+      "target": "Rigi",
+      "status": "open",
+      "title": "Rigi operating info checked — live conditions page available",
+      "text_len": 644,
+      "url": "https://www.rigi.ch/en/inform/current-information"
+    },
+    {
+      "target": "Titlis Engelberg",
+      "status": "partial",
+      "title": "Titlis Engelberg operating info — Preview for Saturday 9th May 2026: The first ascent is at 8.30 am. The facilities are expected to be open as shown below",
+      "text_len": 2585,
+      "url": "https://www.titlis.ch/en/live"
+    },
+    {
+      "target": "Schilthorn Mürren",
+      "status": "open",
+      "title": "Schilthorn Mürren operating info checked — live conditions page available",
+      "text_len": 7359,
+      "url": "https://schilthorn.ch/en/Infos/Timetable__Tariffs/Open_facilities"
+    },
+    {
+      "target": "Aletsch Arena",
+      "status": "open",
+      "title": "Aletsch Arena operating info checked — live conditions page available",
+      "text_len": 2950,
+      "url": "https://www.aletscharena.ch/en/aletsch-arena/interactive/operating-status"
+    },
+    {
+      "target": "Davos Klosters",
+      "status": "open",
+      "title": "Davos Klosters operating info checked — live conditions page available",
+      "text_len": 1038,
+      "url": "https://www.davos.ch/en/inform/operating-hours"
+    },
+    {
+      "target": "Arosa Lenzerheide",
+      "status": "open",
+      "title": "Arosa Lenzerheide operating info — Operating Hours",
+      "text_len": 1236,
+      "url": "https://arosalenzerheide.swiss/en/Region/Live/Operating-hours"
+    },
+    {
+      "target": "Flims Laax Falera",
+      "status": "partial",
+      "title": "Flims Laax Falera operating info — On May 1st, weekend operations with the FlemX started on the trails in Flims (depending on snow conditions). In addition",
+      "text_len": 3440,
+      "url": "https://www.laax.com/en/live"
+    },
+    {
+      "target": "Andermatt Sedrun Disentis",
+      "status": "open",
+      "title": "Andermatt Sedrun Disentis operating info — Betriebszeiten",
+      "text_len": 710,
+      "url": "https://www.andermatt-sedrun-disentis.ch/en/live-info"
+    },
+    {
+      "target": "Saas-Fee / Saas Valley",
+      "status": "open",
+      "title": "Saas-Fee / Saas Valley operating info — Current information on open cable cars, hiking trails, mountain restaurants, bike trails and leisure facilities.",
+      "text_len": 3227,
+      "url": "https://www.saas-fee.ch/en/live/operating-information"
+    },
+    {
+      "target": "Gstaad",
+      "status": "open",
+      "title": "Gstaad operating info checked — live conditions page available",
+      "text_len": 548,
+      "url": "https://www.gstaad.ch/en/gstaad/information/operating-hours.html"
+    },
+    {
+      "target": "Stoos",
+      "status": "partial",
+      "title": "Stoos operating info — Hiking trails from 1600 m a.s.l. partly snow-covered • Ridge hiking trail closed | Operating info",
+      "text_len": 692,
+      "url": "https://www.stoos.ch/en/pages/operating-info"
+    },
+    {
+      "target": "Engadin St. Moritz",
+      "status": "open",
+      "title": "Engadin St. Moritz operating info checked — live conditions page available",
+      "text_len": 781,
+      "url": "https://www.engadin.ch/en/snow-report/open-facilities/"
+    },
+    {
+      "target": "Glacier 3000",
+      "status": "open",
+      "title": "Glacier 3000 operating info checked — live conditions page available",
+      "text_len": 86,
+      "url": "https://www.glacier3000.ch/en/information/live-info"
+    },
+    {
+      "target": "Verbier 4 Vallées",
+      "status": "partial",
+      "title": "Verbier 4 Vallées operating info — The Chable–Verbier line is closed for maintenance from 27 April to 22 May. Replacement buses are in operation. MORE INFO",
+      "text_len": 1473,
+      "url": "https://www.verbier4vallees.ch/en/infos/live-info"
+    },
+    {
+      "target": "Crans-Montana",
+      "status": "open",
+      "title": "Crans-Montana operating info checked — live conditions page available",
+      "text_len": 522,
+      "url": "https://www.mycma.ch/en/live/"
+    },
+    {
+      "target": "Adelboden-Lenk",
+      "status": "partial",
+      "title": "Adelboden-Lenk operating info — Due to the stormy weather conditions, all lifts in the central area remain closed today. You can find the current status",
+      "text_len": 2256,
+      "url": "https://www.adelboden-lenk.ch/en/live"
+    },
+    {
+      "target": "Meiringen-Hasliberg",
+      "status": "open",
+      "title": "Meiringen-Hasliberg operating info — Betriebszeiten",
+      "text_len": 2525,
+      "url": "https://www.meiringen-hasliberg.ch/en/Live/Operating-hours"
+    },
+    {
+      "target": "Flumserberg",
+      "status": "open",
+      "title": "Flumserberg operating info checked — live conditions page available",
+      "text_len": 1250,
+      "url": "https://www.flumserberg.ch/en/Live/Facilities"
+    },
+    {
+      "target": "Pizol",
+      "status": "open",
+      "title": "Pizol operating info checked — live conditions page available",
+      "text_len": 427,
+      "url": "https://pizol.com/en/live/operating-hours"
+    },
+    {
+      "target": "Mythenregion",
+      "status": "open",
+      "title": "Mythenregion operating info checked — live conditions page available",
+      "text_len": 362,
+      "url": "https://www.mythenregion.ch/en/live/operating-info"
+    },
+    {
+      "target": "Sörenberg",
+      "status": "open",
+      "title": "Sörenberg operating info checked — live conditions page available",
+      "text_len": 309,
+      "url": "https://www.soerenberg.ch/en/live/operating-hours"
+    },
+    {
+      "target": "Melchsee-Frutt",
+      "status": "partial",
+      "title": "Melchsee-Frutt operating info — Alle Anlagen sind geschlossen. Wir freuen uns auf ein Wiedersehen zum Sommersaisonstart am 13. Juni 2026.",
+      "text_len": 760,
+      "url": "https://www.melchsee-frutt.ch/en/live"
+    },
+    {
+      "target": "Braunwald",
+      "status": "open",
+      "title": "Braunwald operating info checked — live conditions page available",
+      "text_len": 576,
+      "url": "https://www.braunwald.ch/en/live/operating-hours"
+    },
+    {
+      "target": "Elm",
+      "status": "open",
+      "title": "Elm operating info — Excüse, diese Seite ist wohl gerade auf einer Wanderung oder Biketour.",
+      "text_len": 648,
+      "url": "https://www.elm.ch/en/live/operating-hours"
+    },
+    {
+      "target": "Leukerbad",
+      "status": "open",
+      "title": "Leukerbad operating info checked — live conditions page available",
+      "text_len": 1190,
+      "url": "https://www.leukerbad.ch/en/live/operating-hours"
+    }
+  ]
+}

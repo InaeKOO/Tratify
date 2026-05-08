@@ -1,0 +1,108 @@
+{
+  "inserted": 14,
+  "reports": [
+    {
+      "target": "Kronberg",
+      "status": "open",
+      "title": "Kronberg operating info checked — live conditions page available",
+      "text_len": 634,
+      "url": "https://www.kronberg.ch/en/live"
+    },
+    {
+      "target": "Flumserberg Prodalp",
+      "status": "open",
+      "title": "Flumserberg Prodalp operating info checked — live conditions page available",
+      "text_len": 1250,
+      "url": "https://www.flumserberg.ch/en/Live/Facilities"
+    },
+    {
+      "target": "Moleson",
+      "status": "open",
+      "title": "Moleson operating info checked — live conditions page available",
+      "text_len": 1215,
+      "url": "https://www.moleson.ch/en/live"
+    },
+    {
+      "target": "Charmey",
+      "status": "open",
+      "title": "Charmey operating info checked — live conditions page available",
+      "text_len": 457,
+      "url": "https://www.charmey.ch/en/live"
+    },
+    {
+      "target": "Les Diablerets",
+      "status": "open",
+      "title": "Les Diablerets operating info checked — live conditions page available",
+      "text_len": 1024,
+      "url": "https://www.alpesvaudoises.ch/en/stories/live-info"
+    },
+    {
+      "target": "Villars-Gryon",
+      "status": "open",
+      "title": "Villars-Gryon operating info checked — live conditions page available",
+      "text_len": 1024,
+      "url": "https://www.alpesvaudoises.ch/en/stories/live-info"
+    },
+    {
+      "target": "Sainte-Croix Les Rasses",
+      "status": "open",
+      "title": "Sainte-Croix Les Rasses operating info checked — live conditions page available",
+      "text_len": 584,
+      "url": "https://www.yverdonlesbainsregion.ch/en/Z13117/live-info"
+    },
+    {
+      "target": "Sattel Mostelberg",
+      "status": "partial",
+      "title": "Sattel Mostelberg operating info — Bis Ende Mai geschlossen. Closed until end of May.",
+      "text_len": 2420,
+      "url": "https://www.sattel-hochstuckli.ch/en/live"
+    },
+    {
+      "target": "Marbachegg",
+      "status": "open",
+      "title": "Marbachegg operating info — Marbachegg Biketrails",
+      "text_len": 4856,
+      "url": "https://www.marbachegg.ch/en/live"
+    },
+    {
+      "target": "Wirzweli",
+      "status": "open",
+      "title": "Wirzweli operating info — Bahnbetrieb eingestellt-hier alle Infos!",
+      "text_len": 662,
+      "url": "https://www.wirzweli.ch/en/live"
+    },
+    {
+      "target": "Rosswald",
+      "error": "timed out",
+      "url": "https://www.rosswald.ch/en/live"
+    },
+    {
+      "target": "Bettmeralp",
+      "status": "partial",
+      "title": "Bettmeralp operating info — Snowshoeing",
+      "text_len": 2950,
+      "url": "https://www.aletscharena.ch/en/aletsch-arena/interactive/operating-status"
+    },
+    {
+      "target": "Riederalp",
+      "status": "partial",
+      "title": "Riederalp operating info — Snowshoeing",
+      "text_len": 2950,
+      "url": "https://www.aletscharena.ch/en/aletsch-arena/interactive/operating-status"
+    },
+    {
+      "target": "Sörenberg Brienzer Rothorn",
+      "status": "open",
+      "title": "Sörenberg Brienzer Rothorn operating info checked — live conditions page available",
+      "text_len": 309,
+      "url": "https://www.soerenberg.ch/en/live/operating-hours"
+    },
+    {
+      "target": "Kandersteg Sunnbüel",
+      "status": "partial",
+      "title": "Kandersteg Sunnbüel operating info — Luftseilbahn Kandersteg–Sunnbüel: ‘GESCHLOSSEN’ Aufgrund Revision – Dienstag, 7. April bis Freitag 29. Mai 2026",
+      "text_len": 6143,
+      "url": "https://www.sunnbuel.ch/en/live"
+    }
+  ]
+}

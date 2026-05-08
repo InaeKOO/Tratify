@@ -1,0 +1,89 @@
+{
+  "inserted": 12,
+  "reports": [
+    {
+      "target": "Savognin",
+      "status": "open",
+      "title": "Savognin operating info checked — live conditions page available",
+      "text_len": 604,
+      "url": "https://www.valsurses.ch/en/live"
+    },
+    {
+      "target": "Obersaxen Mundaun",
+      "status": "open",
+      "title": "Obersaxen Mundaun operating info — Schneehöhe Gipfel (2310 m. ü. M.)",
+      "text_len": 4157,
+      "url": "https://www.obersaxen-mundaun.ch/en/live"
+    },
+    {
+      "target": "Brigels Waltensburg Andiast",
+      "status": "open",
+      "title": "Brigels Waltensburg Andiast operating info checked — live conditions page available",
+      "text_len": 1064,
+      "url": "https://www.brigels-bergbahnen.ch/en/live"
+    },
+    {
+      "target": "Scuol Motta Naluns",
+      "status": "open",
+      "title": "Scuol Motta Naluns operating info checked — live conditions page available",
+      "text_len": 116,
+      "url": "https://www.scuol-bergbahnen.ch/en/live"
+    },
+    {
+      "target": "Samnaun",
+      "status": "open",
+      "title": "Samnaun operating info — Wanderungen",
+      "text_len": 852,
+      "url": "https://www.samnaun.ch/en/Service/Live"
+    },
+    {
+      "target": "Airolo Pesciüm",
+      "status": "open",
+      "title": "Airolo Pesciüm operating info checked — live conditions page available",
+      "text_len": 1092,
+      "url": "https://www.airolo.ch/en/live"
+    },
+    {
+      "target": "Bosco Gurin",
+      "status": "open",
+      "title": "Bosco Gurin operating info checked — live conditions page available",
+      "text_len": 1111,
+      "url": "https://www.bosco-gurin.ch/en/live"
+    },
+    {
+      "target": "Nara",
+      "status": "partial",
+      "title": "Nara operating info — Sci e snowboard",
+      "text_len": 1589,
+      "url": "https://www.nara.ch/en/live"
+    },
+    {
+      "target": "Carì",
+      "status": "open",
+      "title": "Carì operating info checked — live conditions page available",
+      "text_len": 423,
+      "url": "https://www.cari.swiss/en/live"
+    },
+    {
+      "target": "Weissenstein",
+      "status": "open",
+      "title": "Weissenstein operating info checked — live conditions page available",
+      "text_len": 221,
+      "url": "https://www.seilbahn-weissenstein.ch/en/live"
+    },
+    {
+      "target": "Balmberg",
+      "status": "partial",
+      "title": "Balmberg operating info — Alle Skilifte und Bistro Balmberg geschlossen.",
+      "text_len": 566,
+      "url": "https://www.balmberg.ch/"
+    },
+    {
+      "target": "Toggenburg Alt St. Johann",
+      "status": "open",
+      "title": "Toggenburg Alt St. Johann operating info checked — live conditions page available",
+      "text_len": 771,
+      "url": "https://www.toggenburg.swiss/en/live"
+    }
+  ]
+}
