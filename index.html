@@ -369,10 +369,11 @@
 <div class="page" id="tab-admin">
   <div class="admin-lock" id="admin-lock">
     <h3>🔐 Admin access</h3>
-    <p style="font-size:13px;color:#6b7280;margin-bottom:1.5rem;">Enter your admin password to review pending announcements.</p>
-    <input type="password" id="admin-pw" placeholder="Admin password" onkeydown="if(event.key==='Enter')unlockAdmin()" />
-    <button class="admin-unlock-btn" onclick="unlockAdmin()">Unlock</button>
-    <p id="pw-error" style="font-size:13px;color:#991b1b;margin-top:.75rem;display:none;">Incorrect password.</p>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:1.5rem;">Sign in with a Supabase admin account to review pending announcements.</p>
+    <input type="email" id="admin-email" placeholder="Admin email" autocomplete="username" />
+    <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')adminSignIn()" />
+    <button class="admin-unlock-btn" onclick="adminSignIn()">Sign in</button>
+    <p id="admin-error" style="font-size:13px;color:#991b1b;margin-top:.75rem;display:none;"></p>
   </div>
   <div class="admin-panel" id="admin-panel">
     <div class="admin-header">
@@ -380,7 +381,11 @@
         <div class="admin-title">Pending announcements</div>
         <div class="admin-subtitle">Review and approve or reject submissions before they go live.</div>
       </div>
-      <button onclick="loadPending()" style="padding:7px 14px;font-size:13px;border:1px solid #d1d5db;border-radius:7px;background:#fff;cursor:pointer;">Refresh</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span id="admin-user" style="font-size:12px;color:#6b7280;"></span>
+        <button onclick="loadPending()" style="padding:7px 14px;font-size:13px;border:1px solid #d1d5db;border-radius:7px;background:#fff;cursor:pointer;">Refresh</button>
+        <button onclick="adminSignOut()" style="padding:7px 14px;font-size:13px;border:1px solid #d1d5db;border-radius:7px;background:#fff;cursor:pointer;">Sign out</button>
+      </div>
     </div>
     <div id="pending-list"><div class="loading-state">Loading…</div></div>
   </div>
@@ -392,14 +397,11 @@
 /* ═══════════════════════════════════════════════════
    CONFIGURATION — inject via deployment/backend secrets
 ═══════════════════════════════════════════════════ */
-// Do not commit real service keys/passwords in this static file.
-// For a static demo, leave these blank: the UI will use safe demo data and all buttons still work.
-// In production, inject config before this script, e.g. window.TRATIFY_CONFIG = { supabaseUrl, supabaseAnonKey }.
+// The Supabase URL and anon key are intentionally public. Security is enforced by Supabase RLS policies.
+// Never put service-role keys, admin passwords, or AI provider API keys in this static file.
 const CONFIG = window.TRATIFY_CONFIG || {};
-const SUPABASE_URL      = CONFIG.supabaseUrl || "";
-const SUPABASE_ANON_KEY = CONFIG.supabaseAnonKey || "";
-const ANTHROPIC_API_KEY = CONFIG.anthropicApiKey || "";
-const ADMIN_PASSWORD    = CONFIG.adminPassword || "";
+const SUPABASE_URL      = CONFIG.supabaseUrl || "https://cyuyxjfaubifokxypntb.supabase.co";
+const SUPABASE_ANON_KEY = CONFIG.supabaseAnonKey || "sb_publishable_Bjkvh2PCRJz2XU2ohciEDQ_k7RCQoK0";
 
 /* ═══════════════════════════════════════════════════
    SUPABASE INIT
@@ -535,21 +537,6 @@ async function doTranslate(card, id) {
   if (!btn) return;
   btn.classList.add("loading"); btn.textContent = "Translating…";
   const targetLang = LANG_NAMES[currentLang];
-  if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY !== "YOUR_ANTHROPIC_API_KEY") {
-    try {
-      const prompt = `Translate to ${targetLang}. Preserve all place names, road codes, times, dates, and authority names exactly. Return ONLY valid JSON with keys "title" and "body".\n\nTitle: ${ann.orig_title}\nBody: ${ann.orig_body}`;
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 500, messages: [{ role: "user", content: prompt }] })
-      });
-      const data = await res.json();
-      const raw = data.content.map(i => i.text || "").join("").replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(raw);
-      showTranslated(card, btn, parsed.title, parsed.body, targetLang, true);
-      return;
-    } catch(e) { /* fall through */ }
-  }
   const fallback = localTranslate(ann, currentLang);
   showTranslated(card, btn, fallback.title, fallback.body, targetLang, false);
 }
@@ -652,20 +639,61 @@ async function submitForm() {
 /* ═══════════════════════════════════════════════════
    ADMIN PANEL
 ═══════════════════════════════════════════════════ */
-function unlockAdmin() {
-  const pw = document.getElementById("admin-pw").value;
-  if (!ADMIN_PASSWORD) {
-    document.getElementById("pw-error").textContent = "Admin is disabled in the static demo. Configure it on a backend before production.";
-    document.getElementById("pw-error").style.display = "block";
-    return;
+let adminSession = null;
+
+function showAdminError(message) {
+  const el = document.getElementById("admin-error");
+  el.textContent = message;
+  el.style.display = message ? "block" : "none";
+}
+
+async function initAdminAuth() {
+  if (!supabaseReady) return;
+  const { data } = await supabaseClient.auth.getSession();
+  adminSession = data.session;
+  if (adminSession) showAdminPanel(adminSession.user);
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    adminSession = session;
+    if (session) showAdminPanel(session.user);
+  });
+}
+
+function showAdminPanel(user) {
+  document.getElementById("admin-lock").style.display = "none";
+  document.getElementById("admin-panel").classList.add("visible");
+  document.getElementById("admin-user").textContent = user?.email || "Signed in";
+  loadPending();
+}
+
+async function adminSignIn() {
+  if (!supabaseReady) { showAdminError("Backend is not configured."); return; }
+  const email = document.getElementById("admin-email").value.trim();
+  const password = document.getElementById("admin-password").value;
+  if (!email || !password) { showAdminError("Enter admin email and password."); return; }
+  showAdminError("");
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) { showAdminError(error.message); return; }
+  adminSession = data.session;
+  showAdminPanel(data.user);
+}
+
+async function adminSignOut() {
+  if (supabaseReady) await supabaseClient.auth.signOut();
+  adminSession = null;
+  document.getElementById("admin-panel").classList.remove("visible");
+  document.getElementById("admin-lock").style.display = "block";
+  document.getElementById("admin-user").textContent = "";
+}
+
+async function requireAdminSession() {
+  if (!supabaseReady) return false;
+  const { data } = await supabaseClient.auth.getSession();
+  adminSession = data.session;
+  if (!adminSession) {
+    showAdminError("Please sign in as an admin first.");
+    return false;
   }
-  if (pw === ADMIN_PASSWORD) {
-    document.getElementById("admin-lock").style.display = "none";
-    document.getElementById("admin-panel").classList.add("visible");
-    loadPending();
-  } else {
-    document.getElementById("pw-error").style.display = "block";
-  }
+  return true;
 }
 
 async function loadPending() {
@@ -674,6 +702,7 @@ async function loadPending() {
     list.innerHTML = `<div class="no-pending">Backend not configured — pending announcements will appear here once connected.</div>`;
     return;
   }
+  if (!(await requireAdminSession())) return;
   list.innerHTML = `<div class="loading-state">Loading…</div>`;
   try {
     const { data, error } = await supabaseClient
@@ -687,50 +716,51 @@ async function loadPending() {
       return;
     }
     list.innerHTML = data.map(a => `
-      <div class="pending-card" id="pending-${a.id}">
+      <div class="pending-card" id="pending-${escapeHtml(a.id)}">
         <div class="card-head">
           <div>
-            <div class="card-title">${a.orig_title}</div>
+            <div class="card-title">${escapeHtml(a.orig_title)}</div>
             <div class="card-meta">
               ${statusBadge(a.status)}${typeBadge(a.type)}
-              <span class="badge b-lang">${ORIG_LANG_LABELS[a.orig_lang] || a.orig_lang}</span>
-              <span class="card-place">${a.place}</span>
+              <span class="badge b-lang">${escapeHtml(ORIG_LANG_LABELS[a.orig_lang] || a.orig_lang)}</span>
+              <span class="card-place">${escapeHtml(a.place)}</span>
             </div>
           </div>
           <span class="card-time">${relativeTime(a.created_at)}</span>
         </div>
-        <div class="card-body" style="margin-top:8px;">${a.orig_body}</div>
+        <div class="card-body" style="margin-top:8px;">${escapeHtml(a.orig_body)}</div>
         <div style="font-size:12px;color:#6b7280;margin-top:8px;">
-          Source: <strong>${a.source_org}</strong>${a.contact_email ? ` · ${a.contact_email}` : ""}
+          Source: <strong>${escapeHtml(a.source_org)}</strong>${a.contact_email ? ` · ${escapeHtml(a.contact_email)}` : ""}
         </div>
         <div class="pending-actions">
-          <button class="approve-btn" onclick="approveAnnouncement('${a.id}')">✓ Approve &amp; publish</button>
-          <button class="reject-btn"  onclick="rejectAnnouncement('${a.id}')">✕ Reject</button>
+          <button class="approve-btn" onclick="approveAnnouncement('${escapeHtml(a.id)}')">✓ Approve &amp; publish</button>
+          <button class="reject-btn"  onclick="rejectAnnouncement('${escapeHtml(a.id)}')">✕ Reject</button>
         </div>
       </div>`).join("");
   } catch(e) {
-    list.innerHTML = `<div class="no-pending" style="color:#991b1b;">Error loading pending announcements.</div>`;
+    console.error(e);
+    list.innerHTML = `<div class="no-pending" style="color:#991b1b;">Error loading pending announcements. Check Supabase RLS/admin policies.</div>`;
   }
 }
 
 async function approveAnnouncement(id) {
+  if (!(await requireAdminSession())) return;
   const { error } = await supabaseClient.from("announcements").update({ verified: true }).eq("id", id);
-  if (!error) {
-    document.getElementById("pending-" + id)?.remove();
-    if (!document.querySelector(".pending-card")) {
-      document.getElementById("pending-list").innerHTML = `<div class="no-pending">✅ No pending announcements — all clear!</div>`;
-    }
-    loadAnnouncements();
+  if (error) { alert("Approval failed. Check Supabase admin RLS policy."); return; }
+  document.getElementById("pending-" + id)?.remove();
+  if (!document.querySelector(".pending-card")) {
+    document.getElementById("pending-list").innerHTML = `<div class="no-pending">✅ No pending announcements — all clear!</div>`;
   }
+  loadAnnouncements();
 }
 async function rejectAnnouncement(id) {
+  if (!(await requireAdminSession())) return;
   if (!confirm("Delete this announcement permanently?")) return;
   const { error } = await supabaseClient.from("announcements").delete().eq("id", id);
-  if (!error) {
-    document.getElementById("pending-" + id)?.remove();
-    if (!document.querySelector(".pending-card")) {
-      document.getElementById("pending-list").innerHTML = `<div class="no-pending">✅ No pending announcements — all clear!</div>`;
-    }
+  if (error) { alert("Reject failed. Check Supabase admin RLS policy."); return; }
+  document.getElementById("pending-" + id)?.remove();
+  if (!document.querySelector(".pending-card")) {
+    document.getElementById("pending-list").innerHTML = `<div class="no-pending">✅ No pending announcements — all clear!</div>`;
   }
 }
 
@@ -802,6 +832,7 @@ document.getElementById("search").addEventListener("input", e => { searchQ = e.t
    INIT
 ═══════════════════════════════════════════════════ */
 loadAnnouncements();
+initAdminAuth();
 </script>
 </body>
 </html>
